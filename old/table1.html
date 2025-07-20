@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="../style.css">
+    <title>หน้าคำนวณ</title>
+</head>
+<body>
+<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50" class="d-inline-block align-text-top">
+            <span id="apptitle" class="ms-3">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">หน้าหลัก</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="map.html">กำหนดพื้นที่</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="table1.html">คำนวณ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="manual.html">คู่มือ</a>
+                </li>
+            </ul>
+
+            <form class="d-flex me-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
+                <button class="btn btn-outline-light" type="submit">ค้นหา</button>
+            </form>
+
+            <div class="d-flex me-3">
+                <button class="btn btn-light" id="authButton" type="button">เข้าสู่ระบบ</button>
+            </div>
+            <div class="d-flex">
+                <button class="btn btn-dark" id="regButton" type="button">ลงทะเบียน</button>
+            </div>
+        </div>
+    </div>
+    <div id="navbar-handle-wrapper">
+        <div id="navbar-toggle-handle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+            </svg>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid"><br>
+    <div id="tableContainer">
+        </div>
+    <button type="button" class="btn btn-success mt-3" id="addNewTableBtn">เพิ่มตารางใหม่</button>
+</div>
+
+<div class="modal fade" id="calcModal" tabindex="-1" aria-labelledby="calcModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="calcModalLabel">เลือกการคำนวณ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ต้องการเฉลี่ยค่ากับแถวก่อนหน้าหรือไม่?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">ไม่เฉลี่ย</button>
+                <button type="button" class="btn btn-success" id="modalConfirmBtn">เฉลี่ย</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="selectTableTypeModal" tabindex="-1" aria-labelledby="selectTableTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectTableTypeModalLabel">เลือกประเภทตาราง</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                โปรดเลือกประเภทของท่อระบายน้ำสำหรับตารางใหม่:
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="selectMainPipeBtn">ท่อระบายน้ำสายหลัก</button>
+                <button type="button" class="btn btn-info" id="selectSubPipeBtn">ท่อระบายน้ำสายย่อย</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lengthSelectionModal" tabindex="-1" aria-labelledby="lengthSelectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lengthSelectionModalLabel">เลือกหมายเลขท่อ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="list-group" id="length-list-container">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="areaSelectionModal" tabindex="-1" aria-labelledby="areaSelectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="areaSelectionModalLabel">เลือกพื้นที่ (A1)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="list-group" id="area-list-container">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script src="../script.js"></script>
+
+<script>
+    // เพิ่มตารางเริ่มต้นเมื่อ DOM โหลดเสร็จ พร้อมระบุประเภทเป็น "สายย่อย"
+    document.addEventListener('DOMContentLoaded', function() {
+        addTable('ย่อย'); // เพิ่มตารางแรกเป็น "สายย่อย" โดยอัตโนมัติ
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    
+    // หา "แถบดึง" และ Navbar จาก id
+    const toggleHandle = document.getElementById('navbar-toggle-handle');
+    const mainNavbar = document.getElementById('mainNavbar');
+
+    if (toggleHandle && mainNavbar) {
+        
+        // เมื่อคลิกที่ "แถบดึง"
+        toggleHandle.addEventListener('click', () => {
+            // ให้สลับคลาส .navbar-hidden บนตัว Navbar เอง
+            mainNavbar.classList.toggle('navbar-hidden');
+        });
+    }
+
+});
+</script>
+
+
+</body>
+</html>

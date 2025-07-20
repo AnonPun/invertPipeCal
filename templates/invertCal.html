@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณระดับก้นท่อ</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            padding-top: 100px;
+            /* Add padding for fixed navbar */
+            background-color: #f8f9fa;
+            margin-top: 20px;
+        }
+
+        #apptitle {
+            font-size: 1.25rem;
+            /* Adjusted for better fit */
+        }
+
+        .table thead th {
+            text-align: center;
+            vertical-align: middle;
+            background-color: #e9ecef;
+            font-size: 0.85rem;
+        }
+
+        .table tbody td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.25rem;
+        }
+
+        .table input[type="number"] {
+            width: 100%;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            text-align: center;
+            padding: 0.375rem;
+        }
+
+        .table input:read-only {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        .highlight input:read-only {
+            background-color: #d1e7dd;
+            /* Bootstrap success light */
+            color: #0f5132;
+        }
+
+        .table-set {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        /* Hide the non-functional navbar handle */
+        #navbar-handle-wrapper {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
+                    class="d-inline-block align-text-top">
+            </a>
+
+            <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="index.html">บันทึกข้อมูล</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="mapAndTable.html">คำนวนพื้นที่รับน้ำ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="calTable.html">คำนวณขนาดท่อ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link active" href="invertCal.html">คำนวณก้นท่อ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="manual.html">คู่มือ</a>
+                    </li>
+                </ul>
+
+                <form class="d-flex me-3" role="search">
+                    <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">ค้นหา</button>
+                </form>
+
+                <div class="d-flex">
+                    <button class="btn btn-light" id="authButton" type="button">Log In</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="table-set">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">ตารางคำนวณค่าระดับท่อ</h4>
+                <button class="btn btn-success" onclick="addTableRow()"><i class="bi bi-plus-lg"></i> เพิ่มแถว</button>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="main-calc-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;" rowspan="2">ลบ</th>
+                                    <th style="width: 10%;">1</th>
+                                    <th style="width: 10%;">2</th>
+                                    <th style="width: 10%;">3</th>
+                                    <th style="width: 10%;">4</th>
+                                    <th class="highlight" style="width: 10%;">5</th>
+                                    <th style="width: 10%;">6</th>
+                                    <th style="width: 8%;">7</th>
+                                    <th style="width: 10%;">8</th>
+                                    <th class="highlight" style="width: 10%;">9</th>
+                                </tr>
+                                <tr>
+                                    <th>จุดเริ่ม</th>
+                                    <th>ค่าระดับดิน</th>
+                                    <th>ดินถมหลังท่อ</th>
+                                    <th>ขนาดท่อ</th>
+                                    <th>ค่าระดับก้นท่อ</th>
+                                    <th>ความยาวท่อ</th>
+                                    <th>ความชัน (+/-)</th>
+                                    <th>ความลาดชัน (1:X)</th>
+                                    <th>ค่าต่างระดับ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calculation-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>10</th>
+                                    <th class="highlight">11</th>
+                                </tr>
+                                <tr>
+                                    <th>จุดเชื่อม</th>
+                                    <th>ระดับก้นท่อจุดเชื่อม</th>
+                                </tr>
+                            </thead>
+                            <tbody id="result-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function adjustBodyPadding() {
+            const navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                const navbarHeight = navbar.offsetHeight;
+                document.body.style.paddingTop = navbarHeight + 'px';
+            }
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', adjustBodyPadding);
+
+        // เรียกใช้ฟังก์ชันอีกครั้งเมื่อมีการปรับขนาดหน้าจอ (เช่น หมุนมือถือ)
+        window.addEventListener('resize', adjustBodyPadding);
+    </script>
+
+    <script>
+        const mainBody = document.getElementById('calculation-body');
+        const resultBody = document.getElementById('result-body');
+
+        // --- Core Calculation Logic ---
+        function recalculateAll() {
+            const rows = mainBody.querySelectorAll('tr');
+            let previousInvertConnect = null;
+
+            rows.forEach((row, index) => {
+                const inputs = {
+                    groundLevel: row.querySelector('.ground-level'),
+                    soilCover: row.querySelector('.soil-cover'),
+                    pipeSize: row.querySelector('.pipe-size'),
+                    pipeInvert: row.querySelector('.pipe-invert'), // result
+                    pipeLength: row.querySelector('.pipe-length'),
+                    slopeSign: row.querySelector('.slope-sign'),
+                    slopeValue: row.querySelector('.slope-value'),
+                    levelDiff: row.querySelector('.level-diff'), // result
+                };
+
+                const resultRow = resultBody.rows[index];
+                const invertConnect = resultRow.querySelector('.invert-connect'); // result
+
+                // 1. Calculate Pipe Invert (Col 5)
+                // If it's the first row, calculate normally. If not, use the previous connection point.
+                let pipeInvertValue;
+                if (index === 0) {
+                    const groundLevel = parseFloat(inputs.groundLevel.value) || 0;
+                    const soilCover = parseFloat(inputs.soilCover.value) || 0;
+                    const pipeSize = parseFloat(inputs.pipeSize.value) || 0;
+                    pipeInvertValue = groundLevel - soilCover - pipeSize;
+                    inputs.pipeInvert.value = pipeInvertValue.toFixed(3);
+                    inputs.groundLevel.readOnly = false; // First row ground level is editable
+                } else {
+                    pipeInvertValue = previousInvertConnect;
+                    inputs.pipeInvert.value = pipeInvertValue.toFixed(3);
+                    // Make subsequent groundLevel inputs readonly as they are not used for this calculation
+                    inputs.groundLevel.readOnly = true;
+                }
+
+                // 2. Calculate Level Difference (Col 9)
+                const pipeLength = parseFloat(inputs.pipeLength.value) || 0;
+                const slopeValNum = parseFloat(inputs.slopeValue.value) || 0;
+                let levelDiffValue = 0;
+                if (slopeValNum !== 0) {
+                    levelDiffValue = pipeLength / slopeValNum;
+                }
+
+                const sign = inputs.slopeSign.value === '-' ? -1 : 1;
+                levelDiffValue *= sign;
+                inputs.levelDiff.value = levelDiffValue.toFixed(3);
+
+                // 3. Calculate Invert at Connection (Col 11)
+                const invertConnectValue = pipeInvertValue + levelDiffValue;
+                invertConnect.value = invertConnectValue.toFixed(3);
+
+                // Store this row's result for the next row's calculation
+                previousInvertConnect = invertConnectValue;
+            });
+        }
+
+        // --- Row Management ---
+        function addTableRow() {
+            const rowCount = mainBody.rows.length;
+
+            // Add to main calculation table
+            const newRow = mainBody.insertRow();
+            newRow.innerHTML = `
+            <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="bi bi-trash"></i></button></td>
+            <td><input type="number" class="form-control" value="${rowCount + 1}" readonly></td>
+            <td><input type="number" step="0.10" class="form-control ground-level" placeholder="ระดับดิน"></td>
+            <td><input type="number" step="0.05" class="form-control soil-cover" value="0.60"></td>
+            <td>
+                <select class="form-select pipe-size">
+                    <option value="0.60">ø0.60</option>
+                    <option value="0.80">ø0.80</option>
+                    <option value="1.00" selected>ø1.00</option>
+                    <option value="1.20">ø1.20</option>
+                    <option value="1.50">ø1.50</option>
+                </select>
+            </td>
+            <td><input type="number" class="form-control pipe-invert" readonly></td>
+            <td><input type="number" step="0.10" class="form-control pipe-length" placeholder="ความยาว"></td>
+            <td>
+                <select class="form-select slope-sign">
+                    <option value="+">+</option>
+                    <option value="-" selected>-</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-select slope-value">
+                    <option value="750">750</option>
+                    <option value="1000" selected>1000</option>
+                    <option value="1200">1200</option>
+                </select>
+            </td>
+            <td><input type="number" class="form-control level-diff" readonly></td>
+        `;
+
+            // Add to side result table
+            const newResultRow = resultBody.insertRow();
+            newResultRow.innerHTML = `
+            <td><input type="number" class="form-control" value="${rowCount + 2}" readonly></td>
+            <td><input type="number" class="form-control invert-connect" readonly></td>
+        `;
+
+            recalculateAll();
+        }
+
+        function deleteRow(button) {
+            const row = button.closest('tr');
+            const rowIndex = row.rowIndex - 2; // -1 for thead
+
+            mainBody.deleteRow(rowIndex);
+            resultBody.deleteRow(rowIndex);
+
+            // Re-number the rows
+            mainBody.querySelectorAll('tr').forEach((r, i) => {
+                r.cells[1].querySelector('input').value = i + 1;
+            });
+            resultBody.querySelectorAll('tr').forEach((r, i) => {
+                r.cells[0].querySelector('input').value = i + 2;
+            });
+
+            recalculateAll();
+        }
+
+        // --- Initial Setup & Event Listener ---
+        document.addEventListener('DOMContentLoaded', () => {
+            addTableRow(); // Add the first row automatically on page load
+        });
+
+        // Use event delegation for performance. Listen for changes on the container.
+        document.getElementById('main-calc-table').addEventListener('input', recalculateAll);
+
+    </script>
+</body>
+
+</html>

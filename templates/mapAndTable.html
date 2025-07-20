@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางคำนวณพื้นที่</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- เพิ่ม CSS สำหรับ Layout ใหม่ --- */
+        html,
+        body {
+            font-family: 'Sarabun', sans-serif;
+            height: 100vh;
+            /* ให้ body สูงเต็มจอ */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #mainNavbar {
+            flex-shrink: 0;
+            /* ไม่ให้ Navbar หดตัว */
+        }
+
+        /* ตัวครอบหลักของ App */
+        #app-container {
+            flex-grow: 1;
+            /* ให้โตเต็มพื้นที่ที่เหลือ */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* ป้องกันการ scroll ของ body */
+        }
+
+        /* ส่วนของแผนที่ */
+        #map-container {
+            height: 50%;
+            position: relative;
+            /* สำหรับวางปุ่มขยาย */
+            background-color: #f0f0f0;
+            transition: height 0.4s ease-in-out;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ส่วนของตาราง */
+        #table-wrapper {
+            height: 50%;
+            overflow-y: auto;
+            /* ให้ scroll ได้เฉพาะส่วนตาราง */
+            padding: 20px;
+            border-top: 3px solid #dee2e6;
+            transition: height 0.4s ease-in-out, padding 0.4s ease-in-out;
+        }
+
+        /* ปุ่มขยาย/ย่อ */
+        #toggle-map-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+            /* ให้อยู่เหนือแผนที่เสมอ */
+        }
+
+        /* --- Class สำหรับควบคุมการแสดงผล --- */
+        #map-container.full-screen {
+            height: 100%;
+        }
+
+        #table-wrapper.hidden {
+            height: 0;
+            padding: 0;
+            border-top: none;
+            overflow: hidden;
+        }
+
+        .polygon-label {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #333;
+            color: #000;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
+                    class="d-inline-block align-text-top">
+            </a>
+
+            <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="index.html">บันทึกข้อมูล</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link active" href="mapAndTable.html">คำนวนพื้นที่รับน้ำ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="calTable.html">คำนวณขนาดท่อ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="invertCal.html">คำนวณก้นท่อ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="manual.html">คู่มือการใช้งาน</a>
+                    </li>
+                </ul>
+
+                <form class="d-flex me-3" role="search">
+                    <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">ค้นหา</button>
+                </form>
+
+                <div class="d-flex">
+                    <button class="btn btn-light" id="authButton" type="button">Log In</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="app-container">
+        <div id="map-container">
+            <div id="map"></div>
+            <button id="toggle-map-btn" class="btn btn-light btn-sm" title="ขยายเต็มจอ">
+                <i class="bi bi-arrows-fullscreen"></i>
+            </button>
+        </div>
+
+        <div id="table-wrapper">
+            <div id="tableContainer">
+            </div>
+            <button type="button" class="btn btn-success" id="addNewTableBtn">เพิ่มตารางใหม่</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="selectTableTypeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">เลือกประเภทตาราง</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">โปรดเลือกประเภทของท่อระบายน้ำสำหรับตารางใหม่:</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="selectMainPipeBtn">ท่อระบายน้ำสายหลัก</button>
+                    <button type="button" class="btn btn-info" id="selectSubPipeBtn">ท่อระบายน้ำสายย่อย</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="lengthSelectionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">เลือกความยาวท่อ (L)</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group" id="length-list-container"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">ปิด</button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="areaSelectionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="areaSelectionModalLabel">เลือกพื้นที่ (A1)</h5><button type="button"
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group" id="area-list-container"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">ปิด</button></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+
+    <script>
+        function adjustBodyPadding() {
+            const navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                const navbarHeight = navbar.offsetHeight;
+                document.body.style.paddingTop = navbarHeight + 'px';
+            }
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', adjustBodyPadding);
+
+        // เรียกใช้ฟังก์ชันอีกครั้งเมื่อมีการปรับขนาดหน้าจอ (เช่น หมุนมือถือ)
+        window.addEventListener('resize', adjustBodyPadding);
+    </script>
+
+    <script src="app.js" defer></script>
+
+</body>
+
+</html>

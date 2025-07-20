@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>โปรแกรมคำนวณหน้าตัดคานคอนกรีตเสริมเหล็ก</title>
+</head>
+<body>
+
+    <div class="container">
+        <h1>คำนวณหน้าตัดคานคอนกรีตเสริมเหล็ก (วิธีกำลัง)</h1>
+        
+        <form id="beam-design-form">
+            <div class="input-section">
+                <h2>ข้อมูลสำหรับออกแบบ</h2>
+
+                <div class="form-group">
+                    <label for="fc">กำลังอัดประลัยของคอนกรีต (f'c):</label>
+                    <input type="number" id="fc" required placeholder="เช่น 240">
+                    <span>ksc</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fy">กำลังครากของเหล็กเสริม (fy):</label>
+                    <input type="number" id="fy" required placeholder="เช่น 4000 สำหรับ SD40">
+                    <span>ksc</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="b">ความกว้างหน้าตัด (b):</label>
+                    <input type="number" id="b" required placeholder="เช่น 25">
+                    <span>ซม.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="h">ความลึกคาน (h):</label>
+                    <input type="number" id="h" required placeholder="เช่น 50">
+                    <span>ซม.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="covering">ระยะหุ้มคอนกรีต (Covering):</label>
+                    <input type="number" id="covering" required placeholder="เช่น 5">
+                    <span>ซม.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="mu">โมเมนต์ดัดประลัย (Mu):</label>
+                    <input type="number" id="mu" required placeholder="เช่น 8000">
+                    <span>กก.-ม.</span>
+                </div>
+
+                <button type="submit">คำนวณ</button>
+            </div>
+        </form>
+
+        <hr>
+
+        <div id="results" class="results-section">
+            <h2>ผลการคำนวณ</h2>
+            <p>พื้นที่เหล็กเสริมที่ต้องการ (As): <strong id="as-result">...</strong> ตร.ซม.</p>
+            <p>สถานะการออกแบบ: <strong id="status-result">...</strong></p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>หน้าคำนวณขนาดท่อ</title>
+    </head>
+<body>
+    <h1>รายละเอียดโครงการ</h1>
+    <div id="project-details">
+        </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. ดึงข้อมูลเป็น String จาก sessionStorage
+            const projectDataJSON = sessionStorage.getItem('projectData');
+
+            // 2. ตรวจสอบว่ามีข้อมูลหรือไม่
+            if (projectDataJSON) {
+                // 3. แปลง String กลับเป็น Object ที่ใช้งานได้
+                const projectData = JSON.parse(projectDataJSON);
+
+                // 4. นำข้อมูลไปแสดงผลบนหน้าเว็บ
+                const detailsContainer = document.getElementById('project-details');
+                
+                detailsContainer.innerHTML = `
+                    <p><strong>ชื่อโครงการ:</strong> ${projectData.projectName}</p>
+                    <p><strong>สำนักงานเขต:</strong> ${projectData.district}</p>
+                    <p><strong>ปี:</strong> ${projectData.year}</p>
+                    <p><strong>ระดับถนนเดิม:</strong> ${projectData.originalLevel}</p>
+                `;
+                
+                // คุณสามารถนำค่า projectData.originalLevel หรือค่าอื่นๆ ไปใช้คำนวณต่อได้
+                console.log("ข้อมูลที่พร้อมใช้งาน:", projectData);
+
+            } else {
+                // กรณีไม่พบข้อมูล
+                document.getElementById('project-details').textContent = 'ไม่พบข้อมูลโครงการ กรุณากลับไปกรอกที่หน้าหลัก';
+            }
+        });
+    </script>
+</body>
+</html>

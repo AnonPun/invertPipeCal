@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบฟอร์มรับข้อมูล</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <title>หน้าหลัก</title>
+    <style>
+        /* --- Base & Mobile First Styles --- */
+        :root {
+            --primary-color: #0056b3;
+            --light-gray: #f4f4f9;
+            --dark-gray: #555;
+            --border-color: #ccc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--light-gray);
+            color: #333;
+            /* display: flex; */
+            /* justify-content: center;
+            align-items: center; */
+            min-height: 100vh;
+            /* ทำให้ body สูงเต็มหน้าจอเสมอ */
+            padding-top: 70px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            /* จำกัดความกว้างสูงสุดบนจอใหญ่ */
+            margin: 30px auto;
+            /* จัดกึ่งกลางและมีระยะห่างด้านบนและล่าง */
+        }
+
+        .form-grid {
+            display: grid;
+            /* ค่าเริ่มต้นสำหรับมือถือคือ 1 คอลัมน์ */
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* จัดการให้ Title และปุ่ม อยู่เต็มความกว้างเสมอ */
+        .form-title,
+        .form-submit-group {
+            grid-column: 1 / -1;
+            /* ใช้ grid-column เพื่อให้ขยายเต็มความกว้าง */
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-gray);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 20px;
+            font-weight: bold;
+            display: none;
+            /* ซ่อนไว้เป็นค่าเริ่มต้น */
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[list] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #004494;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.99);
+        }
+
+        /* --- Tablet & Desktop Styles --- */
+        /* เมื่อหน้าจอกว้างตั้งแต่ 768px ขึ้นไป */
+        @media (min-width: 768px) {
+            .form-grid {
+                /* เปลี่ยนเป็น 2 คอลัมน์ */
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+                /* เพิ่มระยะห่าง */
+            }
+
+            .form-container {
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- start of navigation bar -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
+                    class="d-inline-block align-text-top">
+            </a>
+
+            <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link active" href="index.html">บันทึกข้อมูล</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="mapAndTable.html">คำนวนพื้นที่รับน้ำ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="calTable.html">คำนวณขนาดท่อ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="invertCal.html">คำนวณก้นท่อ</a>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <a class="nav-link" href="manual.html">คู่มือ</a>
+                    </li>
+                </ul>
+
+                <form class="d-flex me-3" role="search">
+                    <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">ค้นหา</button>
+                </form>
+
+                <div class="d-flex">
+                    <button class="btn btn-light" id="authButton" type="button">Log In</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="form-container mt-3">
+        <form action="#" method="post" class="form-grid">
+
+            <h1 class="form-title">📝 ฟอร์มบันทึกข้อมูลโครงการ</h1>
+
+            <div class="form-group">
+                <label for="project-name">ชื่อโครงการ:</label>
+                <input type="text" id="project-name" name="project_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="district-office">สำนักงานเขต:</label>
+                <div class="input-wrapper">
+                    <input list="districts" id="district-office" name="district_office" placeholder="พิมพ์เพื่อค้นหา..."
+                        required autocomplete="off">
+                    <span class="clear-btn" id="clear-district-btn">&times;</span>
+                </div>
+                <datalist id="districts">
+                    <option value="คลองเตย"></option>
+                    <option value="คลองสาน"></option>
+                    <option value="คลองสามวา"></option>
+                    <option value="คันนายาว"></option>
+                    <option value="จตุจักร"></option>
+                    <option value="จอมทอง"></option>
+                    <option value="ดอนเมือง"></option>
+                    <option value="ดินแดง"></option>
+                    <option value="ดุสิต"></option>
+                    <option value="ตลิ่งชัน"></option>
+                    <option value="ทวีวัฒนา"></option>
+                    <option value="ทุ่งครุ"></option>
+                    <option value="ธนบุรี"></option>
+                    <option value="บางกอกน้อย"></option>
+                    <option value="บางกอกใหญ่"></option>
+                    <option value="บางกะปิ"></option>
+                    <option value="บางขุนเทียน"></option>
+                    <option value="บางเขน"></option>
+                    <option value="บางคอแหลม"></option>
+                    <option value="บางแค"></option>
+                    <option value="บางซื่อ"></option>
+                    <option value="บางนา"></option>
+                    <option value="บางบอน"></option>
+                    <option value="บางพลัด"></option>
+                    <option value="บางรัก"></option>
+                    <option value="บึงกุ่ม"></option>
+                    <option value="ปทุมวัน"></option>
+                    <option value="ประเวศ"></option>
+                    <option value="ป้อมปราบศัตรูพ่าย"></option>
+                    <option value="พญาไท"></option>
+                    <option value="พระโขนง"></option>
+                    <option value="พระนคร"></option>
+                    <option value="ภาษีเจริญ"></option>
+                    <option value="มีนบุรี"></option>
+                    <option value="ยานนาวา"></option>
+                    <option value="ราชเทวี"></option>
+                    <option value="ราษฎร์บูรณะ"></option>
+                    <option value="ลาดกระบัง"></option>
+                    <option value="ลาดพร้าว"></option>
+                    <option value="วังทองหลาง"></option>
+                    <option value="วัฒนา"></option>
+                    <option value="สวนหลวง"></option>
+                    <option value="สะพานสูง"></option>
+                    <option value="สัมพันธวงศ์"></option>
+                    <option value="สาทร"></option>
+                    <option value="สายไหม"></option>
+                    <option value="หนองแขม"></option>
+                    <option value="หนองจอก"></option>
+                    <option value="หลักสี่"></option>
+                    <option value="ห้วยขวาง"></option>
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="year">ปี (พ.ศ.):</label>
+                <input type="text" id="year" name="year" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="form-number">แบบเลขที่:</label>
+                <input type="text" id="form-number" name="form_number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="original-level">ระดับถนนเดิม (ม.รทก.):</label>
+                <input type="number" id="original-level" name="original_level" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="improved-level">ระดับถนนปรับปรุง (ม.รทก.):</label>
+                <input type="number" id="improved-level" name="improved_level" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="road-width">ความกว้างถนน (ม.):</label>
+                <input type="number" id="road-width" name="road_width" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nearby-canal">คลองใกล้เคียง:</label>
+                <input type="text" id="nearby-canal" name="nearby_canal">
+            </div>
+
+            <div class="form-group">
+                <label for="dredging-level">ระดับขุดลอก (ม.รทก.):</label>
+                <input type="number" id="dredging-level" name="dredging_level" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="pump-influence">อิทธิพลสถานีสูบน้ำ:</label>
+                <input type="text" id="pump-influence" name="pump_influence">
+            </div>
+
+            <div class="form-group form-submit-group">
+                <button type="submit" class="submit-btn">ยืนยันข้อมูล</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function adjustBodyPadding() {
+            const navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                const navbarHeight = navbar.offsetHeight;
+                document.body.style.paddingTop = navbarHeight + 'px';
+            }
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', adjustBodyPadding);
+
+        // เรียกใช้ฟังก์ชันอีกครั้งเมื่อมีการปรับขนาดหน้าจอ (เช่น หมุนมือถือ)
+        window.addEventListener('resize', adjustBodyPadding);
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = new Date();
+            const currentYear = now.getFullYear() + 543; // แปลงเป็น พ.ศ.
+            const shortYear = currentYear.toString().slice(-2);
+            document.getElementById('year').value = currentYear;
+            document.getElementById('form-number').placeholder = `ตัวอย่าง: 2-${shortYear}-001`;
+
+            // --- ✨ โค้ดใหม่สำหรับจัดการปุ่มลบในช่องค้นหา ---
+            const districtInput = document.getElementById('district-office');
+            const clearBtn = document.getElementById('clear-district-btn');
+
+            // 1. ฟังก์ชันแสดง/ซ่อนปุ่มลบ
+            districtInput.addEventListener('input', function () {
+                if (districtInput.value.length > 0) {
+                    clearBtn.style.display = 'block';
+                } else {
+                    clearBtn.style.display = 'none';
+                }
+            });
+
+            // 2. ฟังก์ชันเมื่อคลิกที่ปุ่มลบ
+            clearBtn.addEventListener('click', function () {
+                districtInput.value = ''; // ล้างข้อความในช่อง input
+                clearBtn.style.display = 'none'; // ซ่อนปุ่มลบ
+                districtInput.focus(); // ย้ายเคอร์เซอร์กลับไปที่ช่อง input
+            });
+
+            // 3. แสดงปีปัจจุบัน (พ.ศ.)
+            const yearField = document.getElementById('year');
+            yearField.value = currentYear;
+
+            // 4. แสดง Placeholder ของแบบเลขที่ตามรูปแบบที่กำหนด
+            const formNumberField = document.getElementById('form-number');
+            formNumberField.placeholder = `ตัวอย่าง: 2-${shortYear}-001`;
+        });
+
+        // ✨ ส่วนใหม่: จัดการการ Submit ฟอร์ม
+        const projectForm = document.querySelector('.form-grid'); // อ้างอิงฟอร์มด้วย class
+
+        projectForm.addEventListener('submit', function (event) {
+            // 1. ป้องกันไม่ให้ฟอร์มส่งข้อมูลแล้วหน้าเว็บรีโหลด
+            event.preventDefault();
+
+            // 2. รวบรวมข้อมูลจากทุกช่องในฟอร์ม
+            const projectData = {
+                projectName: document.getElementById('project-name').value,
+                district: document.getElementById('district-office').value,
+                year: document.getElementById('year').value,
+                formNumber: document.getElementById('form-number').value,
+                originalLevel: document.getElementById('original-level').value,
+                improvedLevel: document.getElementById('improved-level').value,
+                roadWidth: document.getElementById('road-width').value,
+                nearbyCanal: document.getElementById('nearby-canal').value,
+                dredgingLevel: document.getElementById('dredging-level').value,
+                pumpInfluence: document.getElementById('pump-influence').value
+            };
+
+            // 3. บันทึกข้อมูลลงใน sessionStorage
+            // เราแปลง object เป็นข้อความ (JSON string) ก่อนเก็บ
+            sessionStorage.setItem('projectData', JSON.stringify(projectData));
+
+            // 4. แสดงข้อความแจ้งเตือน และเปลี่ยนหน้าไปยัง mapAndTable.html
+            alert('บันทึกข้อมูลโครงการสำเร็จ กำลังนำท่านไปยังหน้าคำนวณพื้นที่รับน้ำ...');
+            window.location.href = 'mapAndTable.html';
+        });
+    </script>
+
+</body>
+
+</html>
