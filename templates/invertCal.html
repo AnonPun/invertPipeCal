@@ -91,19 +91,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item flex-fill">
-                        <a class="nav-link" href="invertInfo.html">บันทึกข้อมูล</a>
+                        <a class="nav-link" href="{{ url_for('invert_info') }}">บันทึกข้อมูล</a>
                     </li>
                     <li class="nav-item flex-fill">
-                        <a class="nav-link" href="mapAndTable.html">คำนวนพื้นที่รับน้ำ</a>
+                        <a class="nav-link" href="{{ url_for('map_and_table') }}">คำนวนพื้นที่รับน้ำ</a>
                     </li>
                     <li class="nav-item flex-fill">
-                        <a class="nav-link" href="calTable.html">คำนวณขนาดท่อ</a>
+                        <a class="nav-link" href="{{ url_for('cal_table') }}">คำนวณขนาดท่อ</a>
                     </li>
                     <li class="nav-item flex-fill">
-                        <a class="nav-link active" href="invertCal.html">คำนวณก้นท่อ</a>
+                        <a class="nav-link active" href="{{ url_for('invert_cal') }}">คำนวณก้นท่อ</a>
                     </li>
                     <li class="nav-item flex-fill">
-                        <a class="nav-link" href="manual.html">คู่มือการใช้งาน</a>
+                        <a class="nav-link" href="{{ url_for('manual') }}">คู่มือการใช้งาน</a>
                     </li>
                 </ul>
 
@@ -113,7 +113,7 @@
                 </form>
 
                 <div class="d-flex">
-                    <button class="btn btn-light" id="authButton" type="button">Log In</button>
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">ออกจากระบบ</a>
                 </div>
             </div>
         </div>
