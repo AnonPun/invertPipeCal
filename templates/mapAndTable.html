@@ -9,126 +9,371 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 
+    <style>
+        /* Custom CSS for header boxes (FINAL VERSION) */
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 100px;
+        }
+
+        html,
+        body {
+            /* height: 100%;  Removed to allow scrolling */
+            margin: 0;
+            padding: 0;
+            /* overflow: hidden; Removed to allow scrolling */
+        }
+
+        main.container {
+            /* height: 100%; Removed */
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 2rem;
+        }
+
+        /* ตัวครอบหลักของ App (Map + Table) */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            /* overflow: hidden; Removed */
+        }
+
+        /* --- 3. ส่วนแผนที่ (Map Section) --- */
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Class ควบคุมการแสดงผลแผนที่ */
+        #map-container {
+            position: relative;
+            height: 600px;
+            /* Increased fixed height */
+            flex-shrink: 0;
+            margin-bottom: 1rem;
+            transition: height 0.4s ease-in-out;
+        }
+
+        #map-container.fullscreen {
+            height: 100%;
+            margin-bottom: 0;
+        }
+
+        .table-wrapper {
+            /* flex-grow: 1;  */
+            /* overflow-y: auto; Removed internal scroll */
+            padding-right: 0;
+        }
+
+        /* เมื่อแผนที่เต็มจอ ให้ซ่อนส่วนตาราง */
+        /* Map fullscreen styles removed */
+
+        .polygon-label {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #333;
+            color: #000;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* ปุ่มขยาย/ย่อ แผนที่ */
+        /* Map toggle button styles removed */
+
+        /* Class ควบคุมการแสดงผลตาราง */
+        .header-container {
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #495057;
+        }
+
+        .header-cell {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            height: 100%
+        }
+
+        /* Classes copied from report.html */
+        .col-1x {
+            width: 8.33%;
+        }
+
+        .col-2x {
+            width: 16.66%;
+        }
+
+        .col-3x {
+            width: 25%;
+        }
+
+        .col-1s {
+            width: 5%;
+        }
+
+        .col-2s {
+            width: 7.5%;
+        }
+
+        .col-3s {
+            width: 6%;
+        }
+
+        /* 1. Font Size & Border Color (Match Report) */
+        .table {
+            font-size: 0.875rem;
+            border-color: #000 !important;
+            /* Force black border */
+        }
+
+        /* 2. Card Header Style (Match Report) */
+        .card-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        .table tbody .highlight-yellow {
+            vertical-align: middle;
+            text-align: center;
+            background-color: #fff3cd;
+        }
+
+        /* Full Cell Input Styling */
+        .table tbody td {
+            padding: 0 !important;
+            /* Remove cell padding */
+            vertical-align: middle;
+            height: 1px;
+            /* Trick to make cell height match input */
+        }
+
+        .table tbody input.form-control {
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            padding: 0.375rem 0.1rem;
+            /* Maintain some internal padding for text */
+            margin: 0;
+            font-size: inherit;
+            /* Inherit table font size */
+            text-align: center;
+        }
+
+        .table tbody input.form-control:focus {
+            box-shadow: inset 0 0 0 2px #0d6efd;
+            /* Inset focus ring */
+            background-color: #fff;
+        }
+
+        .table thead th,
+        .table thead td,
+        .table tbody th,
+        .table tbody td {
+            vertical-align: middle;
+            text-align: center;
+            /* Generally center for this table */
+        }
+
+        /* Override specifically if needed, but report.html mostly centers content in this table */
+
+        .header-cell.is-blue {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        /* Utility class เพื่อสร้างช่องว่างสำหรับ flex-column */
+        .d-flex.flex-column.g-2 {
+            gap: 0.5rem;
+            /* g-2 ใน Bootstrap คือ 0.5rem */
+        }
+
+        /* Hide spin buttons for number inputs */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
+
 </head>
 
-<body>
+<body class="bg-dark text-light">
 
-    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
-                    class="d-inline-block align-text-top">
+    <!-- ส่วนของ Navbar -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2">
+        <div class="container">
+
+            <a class="navbar-brand" href="https://dds.bangkok.go.th">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" style="height: 40px;">
             </a>
 
-            <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('invert_info') }}">บันทึกข้อมูล</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link active" href="{{ url_for('map_and_table') }}">คำนวนพื้นที่รับน้ำ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('cal_table') }}">คำนวณขนาดท่อ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('invert_cal') }}">คำนวณก้นท่อ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('manual') }}">คู่มือการใช้งาน</a>
-                    </li>
-                </ul>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="row w-100 align-items-center g-3 ms-auto">
 
-                <form class="d-flex me-3" role="search">
-                    <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">ค้นหา</button>
-                </form>
+                    <div class="col-12 col-lg-7 text-center">
+                        <span class="h5 fw-bold text-white my-3 my-lg-0">
+                            ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ
+                        </span>
+                    </div>
 
-                <div class="d-flex">
-                    <a href="{{ url_for('logout') }}" class="btn btn-danger">ออกจากระบบ</a>
+                    <div class="col-12 col-lg-5">
+                        <div class="row g-2">
+                            <div class="col-12 col-sm-6">
+                                <a href="#" class="btn btn-light w-100">{{ session['user_name'] }}</a>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <a href="{{ url_for('logout') }}" class="btn btn-danger text-light w-100">ออกจากระบบ</a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </nav>
 
-    <div id="app-container">
-        <div id="map-container">
-            <div id="map"></div>
-            <button id="toggle-map-btn" class="btn btn-light btn-sm" title="ขยายเต็มจอ">
-                <i class="bi bi-arrows-fullscreen"></i>
-            </button>
-        </div>
-
-        <div id="table-wrapper">
-            <div id="tableContainer">
+    <main class="container">
+        <!-- ส่วนของแผนที่ -->
+        <div id="app-container">
+            <div id="map-container">
+                <div id="map"></div>
+                <!-- Toggle button removed -->
             </div>
-            <button type="button" class="btn btn-success" id="addNewTableBtn">เพิ่มตารางใหม่</button>
-        </div>
-    </div>
 
-    <div class="modal fade" id="selectTableTypeModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">เลือกประเภทตาราง</h5><button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">โปรดเลือกประเภทของท่อระบายน้ำสำหรับตารางใหม่:</div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="selectMainPipeBtn">ท่อระบายน้ำสายหลัก</button>
-                    <button type="button" class="btn btn-info" id="selectSubPipeBtn">ท่อระบายน้ำสายย่อย</button>
-                </div>
+            <!-- ส่วนของตาราง -->
+            <div class="table-wrapper">
+                <div id="tableContainer"></div>
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="lengthSelectionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">เลือกความยาวท่อ (L)</h5><button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="list-group" id="length-list-container"></div>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">ปิด</button></div>
+
+        <hr class="my-2">
+
+        <div class="row justify-content-center g-2">
+            <div class="col-12 col-sm-9">
+                <a href="{{ url_for('cal_table', project_id=project.id) if project else url_for('cal_table') }}"
+                    id="btn-confirm-data" class="btn btn-primary w-100"><i
+                        class="bi bi-check-circle me-1"></i>ยืนยันข้อมูล</a>
+            </div>
+            <div class="col-12 col-sm-3">
+                <a href="{{ url_for('edit_project', project_id=project.id) if project else url_for('project_info') }}"
+                    class="btn btn-danger w-100"><i class="bi bi-arrow-counterclockwise me-1"></i>ย้อนกลับ</a>
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="areaSelectionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="areaSelectionModalLabel">เลือกพื้นที่ (A1)</h5><button type="button"
-                        class="btn-close" data-bs-dismiss="modal"></button>
+
+        <!-- Modals สำหรับเลือกประเภทท่อระบายน้ำ-->
+        <div class="modal fade text-dark" id="selectTableTypeModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">เลือกประเภทตาราง</h5><button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">โปรดเลือกประเภทของท่อระบายน้ำสำหรับตารางใหม่:</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="selectMainPipeBtn">ท่อระบายน้ำสายหลัก</button>
+                        <button type="button" class="btn btn-info" id="selectSubPipeBtn">ท่อระบายน้ำสายย่อย</button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <div class="list-group" id="area-list-container"></div>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">ปิด</button></div>
             </div>
         </div>
-    </div>
 
+        <!-- Modal สำหรับเลือกความยาวท่อ -->
+        <div class="modal fade text-dark" id="lengthSelectionModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">เลือกความยาวท่อ (L)</h5><button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group" id="length-list-container"></div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">ปิด</button></div>
+                </div>
+            </div>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Modal สำหรับเลือกพื้นที่ -->
+        <div class="modal fade" id="areaSelectionModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="areaSelectionModalLabel">เลือกพื้นที่ (A1)</h5><button type="button"
+                            class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group" id="area-list-container"></div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <div>
+                            <strong>รวม: </strong><span id="selectedAreaSum" class="fw-bold"
+                                style="color: black !important;">0</span> ตร.ม.
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                            <button type="button" class="btn btn-primary" id="confirmAreaSelectionBtn">ยืนยัน</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal สำหรับเลือกสัมประสิทธิ์การไหลนอง (C) -->
+        <div class="modal fade" id="cSelectionModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">เลือกสัมประสิทธิ์น้ำท่า (C)</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group" id="c-list-container">
+                            <!-- รายการจะถูกสร้างด้วย JavaScript -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-geometryutil@0.9.3/src/leaflet.geometryutil.js"></script>
+    <script src="https://unpkg.com/leaflet-snap@0.0.4/leaflet.snap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
 
     <script>
@@ -145,9 +390,29 @@
 
         // เรียกใช้ฟังก์ชันอีกครั้งเมื่อมีการปรับขนาดหน้าจอ (เช่น หมุนมือถือ)
         window.addEventListener('resize', adjustBodyPadding);
+
+        // Auto-load project data if in Edit Mode
+        const projectId = {{ project.id if project else 'null' }};
+        window.projectId = projectId; // Make it available to app.js
+        if (projectId) {
+            window.addEventListener('load', () => {
+                if (typeof window.loadProjectDataFromAPI === 'function') {
+                    window.loadProjectDataFromAPI(projectId);
+                } else {
+                    // Check again after a delay in case app.js loads late
+                    setTimeout(() => {
+                        if (typeof window.loadProjectDataFromAPI === 'function') {
+                            window.loadProjectDataFromAPI(projectId);
+                        }
+                    }, 500);
+                }
+            });
+        }
     </script>
 
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+
+
 
 </body>
 

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      padding-top: 100px;
+    }
+
+    /* Custom CSS for Accordion Header */
+    .custom-accordion-button {
+      background-color: #198754 !important;
+      /* Bootstrap's 'success' green */
+      color: white !important;
+    }
+
+    .custom-accordion-button::after {
+      /* Changes the accordion arrow color to white */
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+  </style>
+
+</head>
+
+<body class="bg-dark">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top shadow-sm py-2">
+    <div class="container">
+
+      <a class="navbar-brand" href="https://dds.bangkok.go.th">
+        <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" style="height: 40px;">
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <div class="row w-100 align-items-center g-3 ms-auto">
+          <div class="col-12 col-lg-7 text-center">
+            <span class="h5 fw-bold text-white my-3 my-lg-0">
+              ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ
+            </span>
+          </div>
+
+          <div class="col-12 col-lg-5">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6">
+                <a href="{{ url_for('login') }}" class="btn btn-light w-100">เข้าสู่ระบบ</a>
+              </div>
+              <div class="col-12 col-sm-6">
+                <a href="{{ url_for('register') }}" class="btn btn-warning text-dark w-100">ลงทะเบียน</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <div class="d-flex justify-content-end mb-4">
+      <form action="{{ url_for('main') }}" method="get" class="input-group" style="max-width: 450px;">
+        <!-- Preserve per_page when searching -->
+        {% if per_page != 5 %}
+        <input type="hidden" name="per_page" value="{{ per_page }}">
+        {% endif %}
+        <input type="text" name="q" class="form-control" placeholder="ค้นหาชื่อโครงการ หรือเลขที่แบบ..."
+          value="{{ search_query }}">
+        <button class="btn btn-success" type="submit">ค้นหา</button>
+        {% if search_query %}
+        <a href="{{ url_for('main') }}" class="btn btn-secondary" type="button">ล้าง</a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row fw-bold border-bottom pb-2 mb-3 text-muted">
+          <div class="col-4 col-md-3">เลขที่แบบ</div>
+          <div class="col-8 col-md-7">ชื่อโครงการ</div>
+          <div class="col-12 col-md-2 text-md-center mt-2 mt-md-0">ตัวเลือก</div>
+        </div>
+
+        {% if projects %}
+        {% for project in projects %}
+        <div class="row align-items-center py-2 border-bottom">
+          <div class="col-4 col-md-3">{{ project.form_number }}</div>
+          <div class="col-8 col-md-7">{{ project.project_name }}</div>
+          <div class="col-12 col-md-2 text-md-center mt-2 mt-md-0">
+            <!-- View Button -->
+            <a href="{{ url_for('report', project_id=project.id, mode='view') }}" class="btn btn-primary btn-sm me-1"
+              target="_blank" title="ดูรายละเอียด"><i class="bi bi-eye-fill"></i></a>
+            <!-- Download Button -->
+            <a href="javascript:void(0);" onclick="printReport('{{ url_for('report', project_id=project.id) }}')"
+              class="btn btn-secondary btn-sm" title="ดาวน์โหลด (PDF)"><i class="bi bi-download"></i></a>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info text-center mt-3">
+          ไม่พบโครงการ
+        </div>
+        {% endif %}
+
+        <!-- Pagination Controls -->
+        {% if projects %}
+        <div class="row mt-3 align-items-center">
+          <div class="col-md-6">
+            <nav aria-label="Page navigation">
+              <ul class="pagination mb-0">
+                <li class="page-item {{ 'disabled' if not pagination.has_prev }}">
+                  <a class="page-link"
+                    href="{{ url_for('main', page=pagination.prev_num, per_page=per_page, q=search_query) if pagination.has_prev else '#' }}">ก่อนหน้า</a>
+                </li>
+                {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <li class="page-item {{ 'active' if page_num == pagination.page }}">
+                  <a class="page-link" href="{{ url_for('main', page=page_num, per_page=per_page, q=search_query) }}">{{
+                    page_num
+                    }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% endfor %}
+                <li class="page-item {{ 'disabled' if not pagination.has_next }}">
+                  <a class="page-link"
+                    href="{{ url_for('main', page=pagination.next_num, per_page=per_page, q=search_query) if pagination.has_next else '#' }}">ถัดไป</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="col-md-6 text-md-end mt-2 mt-md-0">
+            <form action="{{ url_for('main') }}" method="get" class="d-inline-block">
+              {% if search_query %}
+              <input type="hidden" name="q" value="{{ search_query }}">
+              {% endif %}
+              <label class="me-2">แสดงผล:</label>
+              <select name="per_page" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+                <option value="5" {{ 'selected' if per_page==5 }}>5 รายการ</option>
+                <option value="10" {{ 'selected' if per_page==10 }}>10 รายการ</option>
+                <option value="20" {{ 'selected' if per_page==20 }}>20 รายการ</option>
+              </select>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="accordion" id="infoAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button custom-accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            ประชาสัมพันธ์
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+          data-bs-parent="#infoAccordion">
+          <div class="accordion-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <h5 class="card-title">ยินดีต้อนรับเข้าสู่ระบบใหม่</h5>
+                    <p class="card-text">ระบบคำนวณขนาดและระดับก้นท่อระบายน้ำเวอร์ชันล่าสุด ออกแบบมาเพื่อความแม่นยำ
+                      รวดเร็ว และรองรับการใช้งานบนทุกอุปกรณ์</p>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">ดูคุณสมบัติใหม่</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <h5 class="card-title">พบปัญหาการใช้งาน?</h5>
+                    <p class="card-text">หากท่านพบข้อผิดพลาดของระบบ หรือต้องการสอบถามข้อมูลเทคนิคเพิ่มเติม
+                      สามารถติดต่อทีมผู้ดูแลระบบได้ที่นี่</p>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">ติดต่อเรา</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <h5 class="card-title">อัปเดตฟีเจอร์: Export รายการคำนวณ</h5>
+                    <p class="card-text">ผู้ใช้งานสามารถส่งออกผลการคำนวณเป็นไฟล์ PDF และ Excel ได้แล้ววันนี้
+                      เพื่อนำไปประกอบเล่มรายการคำนวณได้ทันที</p>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">ลองใช้งาน</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button collapsed custom-accordion-button fw-bold" type="button"
+            data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            คู่มือการใช้งาน
+          </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+          data-bs-parent="#infoAccordion">
+          <div class="accordion-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <svg class="bd-placeholder-img" width="200" height="120" xmlns="http://www.w3.org/2000/svg" role="img"
+                  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <rect width="100%" height="100%" fill="#868e96"></rect>
+                </svg>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6>คู่มือการใช้งาน</h6>
+                <p class="mb-1">$0</p>
+                <p class="mb-0">Body text.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed custom-accordion-button fw-bold" type="button"
+            data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false"
+            aria-controls="collapseThree">
+            ข้อกำหนดและความรู้ที่เกี่ยวข้อง
+          </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+          data-bs-parent="#infoAccordion">
+          <div class="accordion-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="120"
+                    xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice"
+                    focusable="false">
+                    <rect width="100%" height="100%" fill="#868e96"></rect>
+                  </svg>
+                  <div class="card-body">
+                    <h6>ข้อกำหนดเกี่ยวกับการจัดสรรที่ดินเพื่อที่อยู่อาศัยและพาณิชยกรรมกรุงเทพมหานคร</h6>
+                    <p class="mb-1">พ.ศ. 2565</p>
+                    <p class="mb-0 small">กรุงเทพมหานคร</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="120"
+                    xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice"
+                    focusable="false">
+                    <rect width="100%" height="100%" fill="#868e96"></rect>
+                  </svg>
+                  <div class="card-body">
+                    <h6>คู่มือการออกแบบระบบระบายน้ำสำหรับหมู่บ้านจัดสรรในพื้นที่กรุงเทพมหานคร</h6>
+                    <p class="mb-1">พ.ศ. 2542</p>
+                    <p class="mb-0 small">สำนักการระบายน้ำ กรุงเทพมหานคร</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="120"
+                    xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice"
+                    focusable="false">
+                    <rect width="100%" height="100%" fill="#868e96"></rect>
+                  </svg>
+                  <div class="card-body">
+                    <h6>การคำนวณปริมาณน้ำท่า (Runoff) ใช้วิธีหลักเหตุผล (Rational Method)</h6>
+                    <p class="mb-1">พ.ศ. 2394</p>
+                    <p class="mb-0 small">Thomas J. Mulvaney</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="120"
+                    xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice"
+                    focusable="false">
+                    <rect width="100%" height="100%" fill="#868e96"></rect>
+                  </svg>
+                  <div class="card-body">
+                    <h6>การคำนวณปริมาณการไหลของน้ำจากสมการของแมนนิ่ง</h6>
+                    <p class="mb-1">พ.ศ. 2433</p>
+                    <p class="mb-0 small">Robert Manning</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function printReport(url) {
+      // Create an invisible iframe
+      var iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = url;
+      document.body.appendChild(iframe);
+
+      iframe.onload = function () {
+        setTimeout(function () {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+          // Clean up after printing (optional, might need longer timeout)
+          // document.body.removeChild(iframe); 
+        }, 1000);
+      };
+    }
+  </script>
+
+  <!-- Modal for Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="modal fade" id="flashMessageModal" tabindex="-1" aria-labelledby="flashMessageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="flashMessageModalLabel">แจ้งเตือน</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var flashModalElement = document.getElementById('flashMessageModal');
+      if (flashModalElement) {
+        var flashModal = new bootstrap.Modal(flashModalElement);
+        flashModal.show();
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -17,7 +17,6 @@
             font-family: 'Sarabun', sans-serif;
             padding-top: 100px;
             /* Add padding for fixed navbar */
-            background-color: #f8f9fa;
             margin-top: 20px;
         }
 
@@ -73,53 +72,47 @@
     </style>
 </head>
 
-<body>
-    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
-                    class="d-inline-block align-text-top">
+<body class="bg-dark text-light">
+    <!-- ส่วนของ Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2">
+        <div class="container">
+
+            <a class="navbar-brand" href="https://dds.bangkok.go.th">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" style="height: 40px;">
             </a>
 
-            <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('invert_info') }}">บันทึกข้อมูล</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('map_and_table') }}">คำนวนพื้นที่รับน้ำ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('cal_table') }}">คำนวณขนาดท่อ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link active" href="{{ url_for('invert_cal') }}">คำนวณก้นท่อ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('manual') }}">คู่มือการใช้งาน</a>
-                    </li>
-                </ul>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="row w-100 align-items-center g-3 ms-auto">
 
-                <form class="d-flex me-3" role="search">
-                    <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">ค้นหา</button>
-                </form>
+                    <div class="col-12 col-lg-7 text-center">
+                        <span class="h5 fw-bold text-white my-3 my-lg-0">
+                            ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ
+                        </span>
+                    </div>
 
-                <div class="d-flex">
-                    <a href="{{ url_for('logout') }}" class="btn btn-danger">ออกจากระบบ</a>
+                    <div class="col-12 col-lg-5">
+                        <div class="row g-2">
+                            <div class="col-12 col-sm-6">
+                                <a href="#" class="btn btn-light w-100">{{ session.get('user_name', session['user'])
+                                    }}</a>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <a href="{{ url_for('logout') }}" class="btn btn-danger text-light w-100">ออกจากระบบ</a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="container">
+    <main class="container text-dark">
         <div class="table-set">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">ตารางคำนวณค่าระดับท่อ</h4>
@@ -127,21 +120,23 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-10">
+                <div class="col-12">
                     <div class="table-responsive">
                         <table class="table table-bordered" id="main-calc-table">
                             <thead>
                                 <tr>
                                     <th style="width: 5%;" rowspan="2">ลบ</th>
-                                    <th style="width: 10%;">1</th>
-                                    <th style="width: 10%;">2</th>
-                                    <th style="width: 10%;">3</th>
-                                    <th style="width: 10%;">4</th>
+                                    <th style="width: 8%;">1</th>
+                                    <th style="width: 8%;">2</th>
+                                    <th style="width: 8%;">3</th>
+                                    <th style="width: 8%;">4</th>
                                     <th class="highlight" style="width: 10%;">5</th>
-                                    <th style="width: 10%;">6</th>
-                                    <th style="width: 8%;">7</th>
-                                    <th style="width: 10%;">8</th>
+                                    <th style="width: 8%;">6</th>
+                                    <th style="width: 7%;">7</th>
+                                    <th style="width: 8%;">8</th>
                                     <th class="highlight" style="width: 10%;">9</th>
+                                    <th style="width: 10%;">10</th>
+                                    <th class="highlight" style="width: 10%;">11</th>
                                 </tr>
                                 <tr>
                                     <th>จุดเริ่ม</th>
@@ -153,6 +148,8 @@
                                     <th>ความชัน (+/-)</th>
                                     <th>ความลาดชัน (1:X)</th>
                                     <th>ค่าต่างระดับ</th>
+                                    <th>จุดเชื่อม</th>
+                                    <th>ระดับก้นท่อจุดเชื่อม</th>
                                 </tr>
                             </thead>
                             <tbody id="calculation-body">
@@ -160,26 +157,20 @@
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-2">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>10</th>
-                                    <th class="highlight">11</th>
-                                </tr>
-                                <tr>
-                                    <th>จุดเชื่อม</th>
-                                    <th>ระดับก้นท่อจุดเชื่อม</th>
-                                </tr>
-                            </thead>
-                            <tbody id="result-body">
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- ปุ่มยืนยันข้อมูล -->
+            <div class="row justify-content-center g-2">
+                <div class="col-12 col-sm-9">
+                    <a href="{{ url_for('report', project_id=project.id) if project else url_for('report') }}"
+                        class="btn btn-primary w-100"><i class="bi bi-check-circle me-1"></i>ยืนยันข้อมูล</a>
+                </div>
+                <div class="col-12 col-sm-3">
+                    <a href="{{ url_for('cal_table', project_id=project.id) if project else url_for('cal_table') }}"
+                        class="btn btn-danger w-100"><i class="bi bi-arrow-counterclockwise me-1"></i>ย้อนกลับ</a>
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -204,42 +195,101 @@
 
     <script>
         const mainBody = document.getElementById('calculation-body');
-        const resultBody = document.getElementById('result-body');
+        let knownNodes = new Set();
+        let pipeData = []; // Data for this table
+        let fullPipeNetwork = []; // Data from Map & Table (localStorage)
+
+        // --- Database Persistence ---
+        const projectId = {{ project.id if project else 'null' }};
+        let saveTimeout;
+
+        function saveDebounced() {
+            if (!projectId) return; // Only save if project context exists
+
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(async () => {
+                try {
+                    await fetch(`/api/save_project_data/${projectId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ invert_data: pipeData })
+                    });
+                    console.log('Saved to DB');
+                } catch (e) {
+                    console.error('Save failed', e);
+                }
+            }, 1000); // Save after 1 second of inactivity
+        }
+
+        // Inject data from Backend
+        const projectGroundLevel = parseFloat("{{ improved_level }}") || 0;
 
         // --- Core Calculation Logic ---
         function recalculateAll() {
             const rows = mainBody.querySelectorAll('tr');
             let previousInvertConnect = null;
+            let previousPipeSize = 0; // Track previous pipe size
+            const updatedPipeData = [];
 
             rows.forEach((row, index) => {
                 const inputs = {
+                    startNode: row.querySelector('.start-node-select'),
                     groundLevel: row.querySelector('.ground-level'),
                     soilCover: row.querySelector('.soil-cover'),
                     pipeSize: row.querySelector('.pipe-size'),
-                    pipeInvert: row.querySelector('.pipe-invert'), // result
+                    pipeInvert: row.querySelector('.pipe-invert'),
                     pipeLength: row.querySelector('.pipe-length'),
                     slopeSign: row.querySelector('.slope-sign'),
                     slopeValue: row.querySelector('.slope-value'),
-                    levelDiff: row.querySelector('.level-diff'), // result
+                    levelDiff: row.querySelector('.level-diff'),
+                    endNode: row.querySelector('.end-node-select'),
+                    invertConnect: row.querySelector('.invert-connect')
                 };
 
-                const resultRow = resultBody.rows[index];
-                const invertConnect = resultRow.querySelector('.invert-connect'); // result
+                // Current Pipe Size
+                const currentPipeSize = parseFloat(inputs.pipeSize.value) || 0;
+
+                // 0. Update Data Object
+                const existingData = pipeData[index] || {};
+                const rowData = {
+                    ...existingData,
+                    id: existingData.id || '',
+                    q: existingData.q || 0,
+                    status: existingData.status || 'Pending',
+                    startNode: inputs.startNode.value,
+                    groundLevel: inputs.groundLevel.value,
+                    soilCover: inputs.soilCover.value,
+                    size: inputs.pipeSize.value,
+                    length: inputs.pipeLength.value,
+                    slopeSign: inputs.slopeSign.value,
+                    slopeValue: inputs.slopeValue.value,
+                    endNode: inputs.endNode.value
+                };
+
+                updatedPipeData.push(rowData);
+
 
                 // 1. Calculate Pipe Invert (Col 5)
-                // If it's the first row, calculate normally. If not, use the previous connection point.
                 let pipeInvertValue;
                 if (index === 0) {
                     const groundLevel = parseFloat(inputs.groundLevel.value) || 0;
                     const soilCover = parseFloat(inputs.soilCover.value) || 0;
-                    const pipeSize = parseFloat(inputs.pipeSize.value) || 0;
-                    pipeInvertValue = groundLevel - soilCover - pipeSize;
+                    pipeInvertValue = groundLevel - soilCover - currentPipeSize;
                     inputs.pipeInvert.value = pipeInvertValue.toFixed(3);
-                    inputs.groundLevel.readOnly = false; // First row ground level is editable
+                    inputs.groundLevel.readOnly = false;
                 } else {
-                    pipeInvertValue = previousInvertConnect;
+                    if (previousInvertConnect !== null) {
+                        // Formula: PrevInvertConnect + PrevSize - CurrentSize
+                        // Matches the crown (soffit) levels
+                        pipeInvertValue = previousInvertConnect + previousPipeSize - currentPipeSize;
+                    } else {
+                        // Fallback logic if flow is broken (shouldn't happen in valid sequence)
+                        const groundLevel = parseFloat(inputs.groundLevel.value) || 0;
+                        const soilCover = parseFloat(inputs.soilCover.value) || 0;
+                        pipeInvertValue = groundLevel - soilCover - currentPipeSize;
+                    }
+
                     inputs.pipeInvert.value = pipeInvertValue.toFixed(3);
-                    // Make subsequent groundLevel inputs readonly as they are not used for this calculation
                     inputs.groundLevel.readOnly = true;
                 }
 
@@ -257,86 +307,318 @@
 
                 // 3. Calculate Invert at Connection (Col 11)
                 const invertConnectValue = pipeInvertValue + levelDiffValue;
-                invertConnect.value = invertConnectValue.toFixed(3);
+                if (inputs.invertConnect) {
+                    inputs.invertConnect.value = invertConnectValue.toFixed(3);
+                }
 
-                // Store this row's result for the next row's calculation
+                // Update the rowData with calculated values before saving
+                rowData.pipeInvert = pipeInvertValue.toFixed(3);
+                rowData.levelDiff = levelDiffValue.toFixed(3);
+                rowData.invertConnect = invertConnectValue.toFixed(3);
+
+                // Store for next row
                 previousInvertConnect = invertConnectValue;
+                previousPipeSize = currentPipeSize;
             });
+
+            // Save updated data to Global Variable and LocalStorage
+            pipeData = updatedPipeData;
+            // Save updated data to Global Variable and LocalStorage / DB
+            pipeData = updatedPipeData;
+            localStorage.setItem('calTableData', JSON.stringify(pipeData));
+
+            // Trigger DB Save
+            saveDebounced();
         }
 
+
         // --- Row Management ---
-        function addTableRow() {
+        function generateNodeOptions(selectedNode, validNodes = null) {
+            let options = '';
+
+            // If validNodes is provided, use it. Otherwise use all knownNodes.
+            let nodesToRender = validNodes ? Array.from(validNodes) : Array.from(knownNodes);
+
+            // Always ensure the currently selected node is in the list
+            if (selectedNode && !nodesToRender.includes(selectedNode)) {
+                nodesToRender.push(selectedNode);
+            }
+
+            const sortedNodes = nodesToRender.sort((a, b) => {
+                const na = parseInt(a);
+                const nb = parseInt(b);
+                if (!isNaN(na) && !isNaN(nb)) return na - nb;
+                return a.localeCompare(b);
+            });
+
+            sortedNodes.forEach(node => {
+                const isSelected = String(node) === String(selectedNode) ? 'selected' : '';
+                options += `<option value="${node}" ${isSelected}>${node}</option>`;
+            });
+            return options;
+        }
+
+        // Helper: Find valid connected nodes given a start node
+        function getConnectedNodes(node) {
+            if (!fullPipeNetwork || fullPipeNetwork.length === 0) return null; // No network data
+
+            const connected = new Set();
+            fullPipeNetwork.forEach(pipe => {
+                // Check forward connection (Start -> End)
+                if (String(pipe.startNode) === String(node)) {
+                    connected.add(pipe.endNode);
+                }
+                // Check reverse connection (End -> Start)
+                if (String(pipe.endNode) === String(node)) {
+                    connected.add(pipe.startNode);
+                }
+            });
+            return connected.size > 0 ? connected : null;
+        }
+
+        // Helper: Find matching pipe data (Bidirectional)
+        function getPipeInfo(nodeA, nodeB) {
+            if (!fullPipeNetwork) return null;
+            return fullPipeNetwork.find(pipe =>
+                (String(pipe.startNode) === String(nodeA) && String(pipe.endNode) === String(nodeB)) ||
+                (String(pipe.startNode) === String(nodeB) && String(pipe.endNode) === String(nodeA))
+            );
+        }
+
+        function onStartNodeChange(selectElement) {
+            const row = selectElement.closest('tr');
+            const startNode = selectElement.value;
+            const endNodeSelect = row.querySelector('.end-node-select');
+            const currentEndNode = endNodeSelect.value;
+
+            // Filter End Nodes
+            const validEndNodes = getConnectedNodes(startNode);
+
+            // Regenerate End Node Options
+            if (validEndNodes) {
+                endNodeSelect.innerHTML = generateNodeOptions(null, validEndNodes);
+
+                // If there is only one option, select it automatically
+                if (validEndNodes.size === 1) {
+                    endNodeSelect.value = Array.from(validEndNodes)[0];
+                    // Trigger change to update length/size
+                    onEndNodeChange(endNodeSelect);
+                } else {
+                    endNodeSelect.value = ""; // Clear selection if multiple options and previous one invalid
+                }
+
+            } else {
+                // Fallback to all known nodes
+                endNodeSelect.innerHTML = generateNodeOptions(currentEndNode);
+            }
+
+            recalculateAll();
+        }
+
+        function onEndNodeChange(selectElement) {
+            const row = selectElement.closest('tr');
+            const startNode = row.querySelector('.start-node-select').value;
+            const endNode = selectElement.value;
+
+            // Try to auto-fill length and size
+            const match = getPipeInfo(startNode, endNode);
+            if (match) {
+                if (match.length) row.querySelector('.pipe-length').value = match.length;
+
+                // Auto-fill Pipe Size if available in calTableData
+                if (match.size && match.size !== '-') {
+                    const sizeSelect = row.querySelector('.pipe-size');
+                    // Check if the value exists in our fixed options to avoid invalid selection
+                    const validSizes = ['0.60', '0.80', '1.00', '1.20', '1.50'];
+                    if (validSizes.includes(match.size)) {
+                        sizeSelect.value = match.size;
+                    }
+                }
+            }
+            recalculateAll();
+        }
+
+
+        function addTableRow(data = null, skipCalc = false) {
             const rowCount = mainBody.rows.length;
+
+            // Default values
+            let startNode = rowCount + 1;
+            let endNode = rowCount + 2;
+            let length = '';
+            let size = '1.00';
+
+            // Invert Cal specific defaults
+            let groundLevel = '';
+            let soilCover = '0.60';
+            let slopeSign = '-';
+            let slopeValue = '1000';
+
+            if (data) {
+                startNode = data.startNode || startNode;
+                endNode = data.endNode || endNode;
+                length = data.length || '';
+                if (data.size && data.size !== '-') size = data.size;
+
+                if (data.groundLevel) groundLevel = data.groundLevel;
+                if (data.soilCover) soilCover = data.soilCover;
+                if (data.slopeSign) slopeSign = data.slopeSign;
+                if (data.slopeValue) slopeValue = data.slopeValue;
+            }
+
+            // Auto-populate ground level for first row if value is empty and project level exists
+            if (rowCount === 0 && (!groundLevel || groundLevel === '') && projectGroundLevel > 0) {
+                groundLevel = projectGroundLevel.toFixed(3);
+                // Also ensure we update the data object if we are "fixing" an existing row's data on load?
+                // No, addNodes uses 'groundLevel' var to render the input value. 
+                // The input value will be picked up by 'recalculateAll' later.
+            }
+
+            knownNodes.add(startNode);
+            knownNodes.add(endNode);
+
+            // Calculate valid end nodes for initial filtering
+            const validEndNodes = getConnectedNodes(startNode);
 
             // Add to main calculation table
             const newRow = mainBody.insertRow();
             newRow.innerHTML = `
             <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="bi bi-trash"></i></button></td>
-            <td><input type="number" class="form-control" value="${rowCount + 1}" readonly></td>
-            <td><input type="number" step="0.10" class="form-control ground-level" placeholder="ระดับดิน"></td>
-            <td><input type="number" step="0.05" class="form-control soil-cover" value="0.60"></td>
+            <td>
+                <select class="form-select start-node-select" onchange="onStartNodeChange(this)">
+                    ${generateNodeOptions(startNode)}
+                </select>
+            </td>
+            <td><input type="number" step="0.10" class="form-control ground-level" placeholder="ระดับดิน" value="${groundLevel}"></td>
+            <td><input type="number" step="0.05" class="form-control soil-cover" value="${soilCover}"></td>
             <td>
                 <select class="form-select pipe-size">
-                    <option value="0.60">ø0.60</option>
-                    <option value="0.80">ø0.80</option>
-                    <option value="1.00" selected>ø1.00</option>
-                    <option value="1.20">ø1.20</option>
-                    <option value="1.50">ø1.50</option>
+                    <option value="0.60" ${size == '0.60' ? 'selected' : ''}>ø0.60</option>
+                    <option value="0.80" ${size == '0.80' ? 'selected' : ''}>ø0.80</option>
+                    <option value="1.00" ${size == '1.00' ? 'selected' : ''}>ø1.00</option>
+                    <option value="1.20" ${size == '1.20' ? 'selected' : ''}>ø1.20</option>
+                    <option value="1.50" ${size == '1.50' ? 'selected' : ''}>ø1.50</option>
                 </select>
             </td>
             <td><input type="number" class="form-control pipe-invert" readonly></td>
-            <td><input type="number" step="0.10" class="form-control pipe-length" placeholder="ความยาว"></td>
+            <td><input type="number" step="0.10" class="form-control pipe-length" placeholder="ความยาว" value="${length}"></td>
             <td>
                 <select class="form-select slope-sign">
-                    <option value="+">+</option>
-                    <option value="-" selected>-</option>
+                    <option value="+" ${slopeSign == '+' ? 'selected' : ''}>+</option>
+                    <option value="-" ${slopeSign == '-' ? 'selected' : ''}>-</option>
                 </select>
             </td>
             <td>
                 <select class="form-select slope-value">
-                    <option value="750">750</option>
-                    <option value="1000" selected>1000</option>
-                    <option value="1200">1200</option>
+                    <option value="750" ${slopeValue == '750' ? 'selected' : ''}>750</option>
+                    <option value="1000" ${slopeValue == '1000' ? 'selected' : ''}>1000</option>
+                    <option value="1200" ${slopeValue == '1200' ? 'selected' : ''}>1200</option>
                 </select>
             </td>
             <td><input type="number" class="form-control level-diff" readonly></td>
-        `;
-
-            // Add to side result table
-            const newResultRow = resultBody.insertRow();
-            newResultRow.innerHTML = `
-            <td><input type="number" class="form-control" value="${rowCount + 2}" readonly></td>
+            <td>
+                 <select class="form-select end-node-select" onchange="onEndNodeChange(this)">
+                    ${generateNodeOptions(endNode, validEndNodes)}
+                </select>
+            </td>
             <td><input type="number" class="form-control invert-connect" readonly></td>
         `;
 
-            recalculateAll();
+            if (!skipCalc) recalculateAll();
         }
 
         function deleteRow(button) {
-            const row = button.closest('tr');
-            const rowIndex = row.rowIndex - 2; // -1 for thead
+            const tr = button.closest('tr');
+            const index = Array.from(mainBody.children).indexOf(tr);
 
-            mainBody.deleteRow(rowIndex);
-            resultBody.deleteRow(rowIndex);
+            if (index > -1) {
+                mainBody.deleteRow(index);
 
-            // Re-number the rows
-            mainBody.querySelectorAll('tr').forEach((r, i) => {
-                r.cells[1].querySelector('input').value = i + 1;
-            });
-            resultBody.querySelectorAll('tr').forEach((r, i) => {
-                r.cells[0].querySelector('input').value = i + 2;
-            });
+                // Remove from data array
+                pipeData.splice(index, 1);
 
-            recalculateAll();
+                recalculateAll();
+            }
         }
 
         // --- Initial Setup & Event Listener ---
-        document.addEventListener('DOMContentLoaded', () => {
-            addTableRow(); // Add the first row automatically on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Strategy: DB -> LocalStorage Fallback
+
+            let loadedData = null;
+            let loadedMapData = null;
+
+            if (projectId) {
+                try {
+                    const response = await fetch(`/api/get_project_data/${projectId}`);
+                    const dbData = await response.json();
+
+                    if (dbData.invert_data && dbData.invert_data.length > 0) {
+                        loadedData = dbData.invert_data;
+                    } else if (dbData.design_data && dbData.design_data.length > 0) {
+                        // Use design data from calTable
+                        loadedData = dbData.design_data;
+                    } else if (dbData.cal_data && dbData.cal_data.length > 0) {
+                        // Use calculated pipe data as base for invert
+                        loadedData = dbData.cal_data;
+                    }
+                    // Load full network context from cal_data if available
+                    if (dbData.cal_data) {
+                        loadedMapData = dbData.cal_data;
+                    }
+                } catch (e) {
+                    console.error('DB Load Error', e);
+                }
+            }
+
+            // Fallback to LocalStorage if DB didn't provide main data
+            if (!loadedData) {
+                const lsData = localStorage.getItem('calTableData');
+                if (lsData) loadedData = JSON.parse(lsData);
+            }
+
+            // Fallback map data
+            if (!loadedMapData) {
+                const lsMap = localStorage.getItem('calTableData'); // Map usage uses same key currently
+                if (lsMap) loadedMapData = JSON.parse(lsMap);
+            }
+
+            // Apply Map Data
+            if (loadedMapData) {
+                fullPipeNetwork = loadedMapData;
+            }
+
+            // Apply Pipe Data
+            if (loadedData) {
+                pipeData = loadedData;
+
+                // Extract Nodes Logic
+                pipeData.forEach(p => {
+                    if (p.startNode) knownNodes.add(p.startNode);
+                    if (p.endNode) knownNodes.add(p.endNode);
+                });
+                if (fullPipeNetwork.length > 0) {
+                    fullPipeNetwork.forEach(p => {
+                        if (p.startNode) knownNodes.add(p.startNode);
+                        if (p.endNode) knownNodes.add(p.endNode);
+                    });
+                }
+
+                // Populate Rows
+                pipeData.forEach(pipe => {
+                    addTableRow(pipe, true);
+                });
+                recalculateAll();
+            } else {
+                // Fresh Start
+                knownNodes.add(1); knownNodes.add(2);
+                addTableRow();
+            }
         });
 
         // Use event delegation for performance. Listen for changes on the container.
         document.getElementById('main-calc-table').addEventListener('input', recalculateAll);
+        document.getElementById('main-calc-table').addEventListener('change', recalculateAll);
 
     </script>
 </body>

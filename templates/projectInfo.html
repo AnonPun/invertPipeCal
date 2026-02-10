@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบฟอร์มรับข้อมูล</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+    </style>
+
+</head>
+
+<body class="bg-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2" id="mainNavbar">
+        <div class="container">
+
+            <a class="navbar-brand" href="https://dds.bangkok.go.th">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" style="height: 40px;">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="row w-100 align-items-center g-3 ms-auto">
+
+                    <div class="col-12 col-lg-7 text-center">
+                        <span class="h5 fw-bold text-white my-3 my-lg-0">
+                            ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ
+                        </span>
+                    </div>
+
+                    <div class="col-12 col-lg-5">
+                        <div class="row g-2">
+                            <div class="col-12 col-sm-6">
+                                <a href="#" class="btn btn-light w-100">{{ session.get('user_name', session['user'])
+                                    }}</a>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <a href="{{ url_for('logout') }}" class="btn btn-danger text-light w-100">ออกจากระบบ</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding-top: 100px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0 fw-bold">
+                            <i class="bi bi-file-earmark-text-fill me-2"></i>ฟอร์มบันทึกข้อมูลโครงการ
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form
+                            action="{{ url_for('edit_project', project_id=project.id) if project else url_for('project_info') }}"
+                            method="POST">
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="project_name" class="form-label">โครงการ :</label>
+                                    <input type="text" class="form-control" id="project_name" name="project_name"
+                                        value="{{ project.project_name if project else '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="district_office" class="form-label">สำนักงานเขต :</label>
+                                    <select class="form-select" id="district_office" name="district_office" required>
+                                        <option value="เขตคลองสาน">เขตคลองสาน</option>
+                                        <option value="เขตคลองสามวา">เขตคลองสามวา</option>
+                                        <option value="เขตคลองเตย">เขตคลองเตย</option>
+                                        <option value="เขตคันนายาว">เขตคันนายาว</option>
+                                        <option value="เขตจตุจักร">เขตจตุจักร</option>
+                                        <option value="เขตจอมทอง">เขตจอมทอง</option>
+                                        <option value="เขตดอนเมือง">เขตดอนเมือง</option>
+                                        <option value="เขตดินแดง">เขตดินแดง</option>
+                                        <option value="เขตดุสิต">เขตดุสิต</option>
+                                        <option value="เขตตลิ่งชัน">เขตตลิ่งชัน</option>
+                                        <option value="เขตทวีวัฒนา">เขตทวีวัฒนา</option>
+                                        <option value="เขตทุ่งครุ">เขตทุ่งครุ</option>
+                                        <option value="เขตธนบุรี">เขตธนบุรี</option>
+                                        <option value="เขตบางกอกน้อย">เขตบางกอกน้อย</option>
+                                        <option value="เขตบางกอกใหญ่">เขตบางกอกใหญ่</option>
+                                        <option value="เขตบางกะปิ">เขตบางกะปิ</option>
+                                        <option value="เขตบางขุนเทียน">เขตบางขุนเทียน</option>
+                                        <option value="เขตบางคอแหลม">เขตบางคอแหลม</option>
+                                        <option value="เขตบางซื่อ">เขตบางซื่อ</option>
+                                        <option value="เขตบางนา">เขตบางนา</option>
+                                        <option value="เขตบางบอน">เขตบางบอน</option>
+                                        <option value="เขตบางพลัด">เขตบางพลัด</option>
+                                        <option value="เขตบางรัก">เขตบางรัก</option>
+                                        <option value="เขตบางเขน">เขตบางเขน</option>
+                                        <option value="เขตบางแค">เขตบางแค</option>
+                                        <option value="เขตบึงกุ่ม">เขตบึงกุ่ม</option>
+                                        <option value="เขตปทุมวัน">เขตปทุมวัน</option>
+                                        <option value="เขตประเวศ">เขตประเวศ</option>
+                                        <option value="เขตป้อมปราบศัตรูพ่าย">เขตป้อมปราบศัตรูพ่าย</option>
+                                        <option value="เขตพญาไท">เขตพญาไท</option>
+                                        <option value="เขตพระนคร">เขตพระนคร</option>
+                                        <option value="เขตพระโขนง">เขตพระโขนง</option>
+                                        <option value="เขตภาษีเจริญ">เขตภาษีเจริญ</option>
+                                        <option value="เขตมีนบุรี">เขตมีนบุรี</option>
+                                        <option value="เขตยานนาวา">เขตยานนาวา</option>
+                                        <option value="เขตราชเทวี">เขตราชเทวี</option>
+                                        <option value="เขตราษฎร์บูรณะ">เขตราษฎร์บูรณะ</option>
+                                        <option value="เขตลาดกระบัง">เขตลาดกระบัง</option>
+                                        <option value="เขตลาดพร้าว">เขตลาดพร้าว</option>
+                                        <option value="เขตวังทองหลาง">เขตวังทองหลาง</option>
+                                        <option value="เขตวัฒนา">เขตวัฒนา</option>
+                                        <option value="เขตสวนหลวง">เขตสวนหลวง</option>
+                                        <option value="เขตสะพานสูง">เขตสะพานสูง</option>
+                                        <option value="เขตสัมพันธวงศ์">เขตสัมพันธวงศ์</option>
+                                        <option value="เขตสาทร">เขตสาทร</option>
+                                        <option value="เขตสายไหม">เขตสายไหม</option>
+                                        <option value="เขตหนองจอก">เขตหนองจอก</option>
+                                        <option value="เขตหนองแขม">เขตหนองแขม</option>
+                                        <option value="เขตหลักสี่">เขตหลักสี่</option>
+                                        <option value="เขตห้วยขวาง">เขตห้วยขวาง</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="year" class="form-label">ปี (พ.ศ.) :</label>
+                                    <input type="text" class="form-control" id="year" name="year"
+                                        value="{{ project.year if project else suggested_year }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="form_number" class="form-label">เลขที่แบบ :</label>
+                                    <input type="text" class="form-control" id="form_number" name="form_number"
+                                        placeholder="ตัวอย่าง: 2-68-001"
+                                        value="{{ project.form_number if project else suggested_form_number }}"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="original_level" class="form-label">ระดับถนนเดิม (ม.รทก.) :</label>
+                                    <input type="number" step="0.001" class="form-control" id="original_level"
+                                        name="original_level" value="{{ project.original_level if project else '' }}"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="improved_level" class="form-label">ระดับถนนปรับปรุง (ม.รทก.) :</label>
+                                    <input type="number" step="0.001" class="form-control" id="improved_level"
+                                        name="improved_level" value="{{ project.improved_level if project else '' }}"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="road_width" class="form-label">ความกว้างถนน (ม.) :</label>
+                                    <input type="number" step="0.01" class="form-control" id="road_width"
+                                        name="road_width" value="{{ project.road_width if project else '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="nearby_canal" class="form-label">คลองใกล้เคียง :</label>
+                                    <input type="text" class="form-control" id="nearby_canal" name="nearby_canal"
+                                        value="{{ project.nearby_canal if project and project.nearby_canal else '' }}">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="dredging_level" class="form-label">ระดับขุดลอก (ม.รทก.) :</label>
+                                    <input type="number" step="0.001" class="form-control" id="dredging_level"
+                                        name="dredging_level"
+                                        value="{{ project.dredging_level if project and project.dredging_level is not none else '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pump_influence" class="form-label">อิทธิพลสถานีสูบน้ำ :</label>
+                                    <input type="text" class="form-control" id="pump_influence" name="pump_influence"
+                                        value="{{ project.pump_influence if project and project.pump_influence else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4 mx-auto">
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm-9">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-check-square me-2"></i>ยืนยันข้อมูล
+                                        </button>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <a href="{{ url_for('index') }}" class="btn btn-danger w-100">
+                                            <i class="bi bi-arrow-return-left me-2"></i>ย้อนกลับ
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        function adjustBodyPadding() {
+            const navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                const navbarHeight = navbar.offsetHeight;
+                document.body.style.paddingTop = navbarHeight + 'px';
+            }
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', function () {
+            adjustBodyPadding();
+            {% if project %}
+            // Set value for district Select
+            document.getElementById('district_office').value = "{{ project.district }}";
+            {% endif %}
+        });
+
+        const element1 = document.getElementById('form_number');
+        const element2 = document.getElementById('original_level');
+        const element3 = document.getElementById('improved_level');
+        const element4 = document.getElementById('road_width');
+
+        // กำหนดรูปแบบของ Mask
+        const maskOptions1 = {
+            mask: '0-00-000' // 0 คือ Placeholder สำหรับตัวเลข 1 ตำแหน่ง
+        };
+
+        const maskOptions2 = {
+            mask: Number, // ใช้สำหรับตัวเลข
+            scale: 3, // จำนวนตำแหน่งทศนิยม
+            signed: true, // ต้องการเครื่องหมายบวกหรือลบ
+            thousandsSeparator: ',', // ตัวคั่นหลักพัน
+            padFractionalZeros: true, // ต้องการเติมศูนย์ที่ตำแหน่งทศนิยม
+            normalizeZeros: true, // ปรับรูปแบบศูนย์ให้ถูกต้อง
+            radix: '.', // ตัวคั่นทศนิยม
+            mapToRadix: ['.'] // แปลงจุดเป็นจุดทศนิยม
+        };
+
+        const maskOptions3 = {
+            mask: Number, // ใช้สำหรับตัวเลข
+            scale: 3, // จำนวนตำแหน่งทศนิยม
+            signed: true, // ไม่ต้องการเครื่องหมายบวกหรือลบ
+            thousandsSeparator: ',', // ตัวคั่นหลักพัน
+            padFractionalZeros: true, // ไม่ต้องการเติมศูนย์ที่ตำแหน่งทศนิยม
+            normalizeZeros: true, // ปรับรูปแบบศูนย์ให้ถูกต้อง
+            radix: '.', // ตัวคั่นทศนิยม
+            mapToRadix: ['.'] // แปลงจุดเป็นจุดทศนิยม
+        };
+
+        const maskOptions4 = {
+            mask: Number, // ใช้สำหรับตัวเลข
+            scale: 2, // จำนวนตำแหน่งทศนิยม
+            signed: true, // ไม่ต้องการเครื่องหมายบวกหรือลบ
+            thousandsSeparator: ',', // ตัวคั่นหลักพัน
+            padFractionalZeros: true, // ไม่ต้องการเติมศูนย์ที่ตำแหน่งทศนิยม
+            normalizeZeros: true, // ปรับรูปแบบศูนย์ให้ถูกต้อง
+            radix: '.', // ตัวคั่นทศนิยม
+            mapToRadix: ['.'] // แปลงจุดเป็นจุดทศนิยม
+        };
+
+        // สั่งให้ IMask เริ่มทำงานกับ input ของเรา
+        const mask1 = IMask(element1, maskOptions1);
+        const mask2 = IMask(element2, maskOptions2);
+        const mask3 = IMask(element3, maskOptions3);
+        const mask4 = IMask(element4, maskOptions4);
+
+        // --- LocalStorage Persistence Logic ---
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input, select');
+
+        function saveProjectInfo() {
+            const data = {};
+            inputs.forEach(input => {
+                data[input.name] = input.value;
+            });
+            localStorage.setItem('projectInfoData', JSON.stringify(data));
+        }
+
+        function loadProjectInfo() {
+            const savedData = localStorage.getItem('projectInfoData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                inputs.forEach(input => {
+                    if (data[input.name] !== undefined) {
+                        input.value = data[input.name];
+                        // Update masks if applicable
+                        if (input.id === 'form_number') mask1.updateValue();
+                        if (input.id === 'original_level') mask2.updateValue();
+                        if (input.id === 'improved_level') mask3.updateValue();
+                        if (input.id === 'road_width') mask4.updateValue();
+                    }
+                });
+            }
+        }
+
+        // Save on any input
+        inputs.forEach(input => {
+            input.addEventListener('input', saveProjectInfo);
+            input.addEventListener('change', saveProjectInfo);
+            // Catch Mask changes
+            if (input.id === 'form_number') { mask1.on("accept", saveProjectInfo); }
+            if (input.id === 'original_level') { mask2.on("accept", saveProjectInfo); }
+            if (input.id === 'improved_level') { mask3.on("accept", saveProjectInfo); }
+            if (input.id === 'road_width') { mask4.on("accept", saveProjectInfo); }
+        });
+
+        // Load on start
+        loadProjectInfo();
+    </script>
+</body>
+
+</html>

@@ -5,51 +5,197 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>หน้าแรก</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     body {
-      padding-top: 80px;
-      /* เพิ่ม padding ด้านบนเพื่อไม่ให้เนื้อหาถูก Navbar บัง */
       font-family: 'Sarabun', sans-serif;
-      background-color: #f8f9fa;
+      padding-top: 100px;
     }
   </style>
 
 </head>
 
-<body class="bg-light">
+<body class="bg-dark">
 
-  <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
-          class="d-inline-block align-text-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2">
+    <div class="container">
+
+      <a class="navbar-brand" href="https://dds.bangkok.go.th">
+        <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" style="height: 40px;">
       </a>
 
-      <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <div class="navbar-nav me-auto mb-2 mb-lg-0"></div>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <div class="row w-100 align-items-center g-3 ms-auto">
 
-        <form class="d-flex me-3" role="search">
-          <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
-          <button class="btn btn-outline-light" type="submit">ค้นหา</button>
-        </form>
+          <div class="col-12 col-lg-7 text-center">
+            <span class="h5 fw-bold text-white my-3 my-lg-0">
+              ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ
+            </span>
+          </div>
 
-        <div class="d-flex">
-          <a href="login.html" class="btn btn-light">เข้าสู่ระบบ</a>
+          <div class="col-12 col-lg-5">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6">
+                <a href="#" class="btn btn-light w-100">{{ session.get('user_name', session['user']) }}</a>
+              </div>
+              <div class="col-12 col-sm-6">
+                <a href="{{ url_for('logout') }}" class="btn btn-danger text-light w-100">ออกจากระบบ</a>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   </nav>
 
+  <main class="container">
+
+    <div class="d-flex justify-content-end mb-4">
+      <form action="{{ url_for('index') }}" method="get" class="input-group" style="max-width: 450px;">
+        <!-- Preserve per_page when searching -->
+        {% if per_page != 5 %}
+        <input type="hidden" name="per_page" value="{{ per_page }}">
+        {% endif %}
+        <input type="text" name="q" class="form-control" placeholder="ค้นหาชื่อโครงการ หรือเลขที่แบบ..."
+          value="{{ search_query }}">
+        <button class="btn btn-primary" type="submit">ค้นหา</button>
+        {% if search_query %}
+        <a href="{{ url_for('index') }}" class="btn btn-secondary" type="button">ล้าง</a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row fw-bold border-bottom pb-2 mb-3 text-muted">
+          <div class="col-4 col-md-3">เลขที่แบบ</div>
+          <div class="col-8 col-md-7">ชื่อโครงการ</div>
+          <div class="col-12 col-md-2 text-md-center mt-2 mt-md-0">ตัวเลือก</div>
+        </div>
+        {% if projects %}
+        {% for project in projects %}
+        <div class="row align-items-center py-2 border-bottom">
+          <div class="col-4 col-md-3">{{ project.form_number }}</div>
+          <div class="col-8 col-md-7">{{ project.project_name }}</div>
+          <div class="col-12 col-md-2 text-md-center mt-2 mt-md-0">
+            <!-- View Button -->
+            <a href="{{ url_for('report', project_id=project.id, mode='view') }}" class="btn btn-primary btn-sm me-1"
+              title="ดูรายละเอียด"><i class="bi bi-eye-fill"></i></a>
+            <!-- Edit Button -->
+            <a href="{{ url_for('edit_project', project_id=project.id) }}" class="btn btn-warning btn-sm me-1"
+              title="แก้ไข"><i class="bi bi-pencil-square"></i></a>
+            <!-- Delete Button -->
+            <form action="{{ url_for('delete_project', project_id=project.id) }}" method="POST" class="d-inline"
+              onsubmit="return confirm('คุณแน่ใจว่าต้องการลบโครงการนี้?');">
+              <button type="submit" class="btn btn-danger btn-sm" title="ลบ"><i class="bi bi-trash-fill"></i></button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info text-center mt-3">
+          ยังไม่มีโครงการที่ออกแบบไว้
+        </div>
+        {% endif %}
+
+        <!-- Pagination Controls -->
+        {% if projects %}
+        <div class="row mt-3 align-items-center">
+          <div class="col-md-6">
+            <nav aria-label="Page navigation">
+              <ul class="pagination mb-0">
+                <li class="page-item {{ 'disabled' if not pagination.has_prev }}">
+                  <a class="page-link"
+                    href="{{ url_for('index', page=pagination.prev_num, per_page=per_page, q=search_query) if pagination.has_prev else '#' }}">ก่อนหน้า</a>
+                </li>
+                {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <li class="page-item {{ 'active' if page_num == pagination.page }}">
+                  <a class="page-link"
+                    href="{{ url_for('index', page=page_num, per_page=per_page, q=search_query) }}">{{ page_num
+                    }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% endfor %}
+                <li class="page-item {{ 'disabled' if not pagination.has_next }}">
+                  <a class="page-link"
+                    href="{{ url_for('index', page=pagination.next_num, per_page=per_page, q=search_query) if pagination.has_next else '#' }}">ถัดไป</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="col-md-6 text-md-end mt-2 mt-md-0">
+            <form action="{{ url_for('index') }}" method="get" class="d-inline-block">
+              {% if search_query %}
+              <input type="hidden" name="q" value="{{ search_query }}">
+              {% endif %}
+              <label class="me-2">แสดงผล:</label>
+              <select name="per_page" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+                <option value="5" {{ 'selected' if per_page==5 }}>5 รายการ</option>
+                <option value="10" {{ 'selected' if per_page==10 }}>10 รายการ</option>
+                <option value="20" {{ 'selected' if per_page==20 }}>20 รายการ</option>
+              </select>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-12 text-md-center mt-2 mt-md-0">
+      <a href="{{ url_for('project_info') }}" class="btn btn-primary text-light w-100"
+        onclick="localStorage.removeItem('projectInfoData'); localStorage.removeItem('polygonData'); localStorage.removeItem('polylineData'); localStorage.removeItem('mapPageTableData');">เพิ่มโครงการ</a>
+    </div>
+  </main>
+
+  <!-- Modal for Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="modal fade" id="flashMessageModal" tabindex="-1" aria-labelledby="flashMessageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="flashMessageModalLabel">แจ้งเตือน</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var flashModalElement = document.getElementById('flashMessageModal');
+      if (flashModalElement) {
+        var flashModal = new bootstrap.Modal(flashModalElement);
+        flashModal.show();
+      }
+    });
+  </script>
 </body>
 
 </html>

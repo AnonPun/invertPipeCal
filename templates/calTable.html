@@ -15,216 +15,316 @@
 
 </head>
 
-<body>
-    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" width="200" height="50"
-                    class="d-inline-block align-text-top">
+<body class="bg-dark text-light">
+    <!-- ส่วนของ Navbar -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2">
+        <div class="container">
+            <a class="navbar-brand" href="https://dds.bangkok.go.th">
+                <img src="https://dds.bangkok.go.th/images/DDS_Logo_500.png" alt="Logo" style="height: 40px;">
             </a>
-
-            <span class="navbar-text ms-4 me-4 h4 text-white">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('invert_info') }}">บันทึกข้อมูล</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('map_and_table') }}">คำนวนพื้นที่รับน้ำ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link active" href="{{ url_for('cal_table') }}">คำนวณขนาดท่อ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('invert_cal') }}">คำนวณก้นท่อ</a>
-                    </li>
-                    <li class="nav-item flex-fill">
-                        <a class="nav-link" href="{{ url_for('manual') }}">คู่มือการใช้งาน</a>
-                    </li>
-                </ul>
-
-                <form class="d-flex me-3" role="search">
-                    <input class="form-control me-2" type="search" placeholder="ค้นหา..." aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">ค้นหา</button>
-                </form>
-
-                <div class="d-flex">
-                    <a href="{{ url_for('logout') }}" class="btn btn-danger">ออกจากระบบ</a>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="row w-100 align-items-center g-3 ms-auto">
+                    <div class="col-12 col-lg-7 text-center">
+                        <span class="h5 fw-bold text-white my-3 my-lg-0">ระบบคำนวนขนาดและระดับก้นท่อระบายน้ำ</span>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div class="row g-2">
+                            <div class="col-12 col-sm-6"><a href="#" class="btn btn-light w-100">{{
+                                    session.get('user_name', session['user']) }}</a></div>
+                            <div class="col-12 col-sm-6"><a href="{{ url_for('logout') }}"
+                                    class="btn btn-danger text-light w-100">ออกจากระบบ</a></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container mt-5 pt-5">
         <div class="card shadow-sm">
-            <h2 class="mb-4">ออกแบบท่อระบายน้ำ</h2>
-
-            <div class="row g-3 align-items-center mb-3">
-                <div class="col-md-2">
-                    <label for="designFlow" class="form-label">ปริมาณน้ำออกแบบ</label>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input type="text" id="designFlow" class="form-control text-primary fw-bold" value="0.201">
-                        <span class="input-group-text">ลบ.ม./วินาที</span>
-                    </div>
-                </div>
-                <div class="col-md-1 text-md-start">
-                    <label for="numSides" class="form-label">จำนวนฝั่ง</label>
-                </div>
-                <div class="col-md-2">
-                    <select id="numSides" class="form-select bg-light-blue">
-                        <option value="1">1 ฝั่ง</option>
-                        <option value="2">2 ฝั่ง</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input type="text" id="flowPerSide" class="form-control text-primary fw-bold" readonly>
-                        <span class="input-group-text">ลบ.ม./วินาที</span>
-                    </div>
+            <div class="card-header bg-light text-dark fw-bold">
+                ตารางคำนวณขนาดท่อระบายน้ำ
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped mb-0 text-center align-middle" id="summaryTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>หมายเลขท่อ</th>
+                                <th>ปริมาณน้ำฝน Q<br>(ลบ.ม./วินาที)</th>
+                                <th>จำนวน cell</th>
+                                <th>ขนาดท่อที่เลือก</th>
+                                <th>ความชัน</th>
+                                <th>ความจุของท่อ Qp<br>(ลบ.ม./วินาที)</th>
+                                <th>ความเร็วสูงสุด Vp<br>(ลบ.ม./วินาที)</th>
+                                <th>ความเร็วที่เกิด V<br>(ลบ.ม./วินาที)</th>
+                                <th>การออกแบบ</th>
+                                <th>แก้ไข</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody">
+                            <!-- Rows will be generated by JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="row g-3 align-items-center mb-3">
-                <div class="col-md-2">
-                    <label class="form-label">หมายเหตุ</label>
-                </div>
-                <div class="col-md-9">
-                    <input type="text" class="form-control bg-light-yellow">
-                </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('map_and_table', project_id=project.id) if project else url_for('map_and_table') }}"
+                    class="btn btn-danger me-2"><i class="bi bi-arrow-counterclockwise me-1"></i>ย้อนกลับ</a>
+                <button onclick="validateAndProceed()" class="btn btn-primary"><i
+                        class="bi bi-check-circle me-1"></i>ดำเนินการต่อ (Invert)</button>
             </div>
-            <div class="row g-3 align-items-center mb-4">
-                <div class="col-md-2">
-                    <label for="pipeSize" class="form-label">เลือกขนาดท่อ</label>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <span class="input-group-text">ø</span>
-                        <input type="text" id="pipeSize" class="form-control" value="0.80">
-                        <span class="input-group-text">ม.</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary pipe-size-btn">0.60</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary pipe-size-btn">0.80</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary pipe-size-btn">1.00</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary pipe-size-btn">1.20</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary pipe-size-btn">1.50</button>
-                    </div>
-                </div>
-            </div>
-            <div class="row g-3 align-items-center">
-                <div class="col-md-2">
-                    <label for="slopeDenominator" class="form-label">ความชัน</label>
-                </div>
-                <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text">1 :</span>
-                        <select id="slopeDenominator" class="form-select bg-light-blue">
-                            <option value="750">750</option>
-                            <option value="1000" selected>1000</option>
-                            <option value="1200">1200</option>
-                        </select>
-                        <span class="input-group-text">/</span>
-                        <input type="text" id="pipeSlope" class="form-control" readonly>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
-            <hr class="my-4">
+    <script>
+        const projectId = {{ project.id if project else 'null' }};
+        window.projectId = projectId;
+        const invertCalUrl = projectId ? "{{ url_for('invert_cal', project_id=0) }}".replace('0', projectId) : "{{ url_for('invert_cal') }}";
 
-            <div class="row g-3 align-items-center mb-4">
-                <div class="col-md-2">
-                    <label class="form-label">ความจุ, Q₀</label>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input type="text" id="pipeCapacity" class="form-control text-primary fw-bold" readonly>
-                        <span class="input-group-text">ลบ.ม./วินาที</span>
-                    </div>
-                </div>
-                <div class="col-md-2 text-md-start">
-                    <label class="form-label">ความเร็ว, V₀</label>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input type="text" id="pipeVelocity" class="form-control text-primary fw-bold" readonly>
-                        <span class="input-group-text">ม./วินาที</span>
-                    </div>
-                </div>
-            </div>
+        // Function to load data from server
+        async function loadProjectData() {
+            if (!projectId) return;
+            try {
+                const response = await fetch(`/api/get_project_data/${projectId}?t=${Date.now()}`);
+                const data = await response.json();
 
-            <div class="row g-3 align-items-center">
-                <div class="col-md-2">
-                    <label class="form-label">อัตราส่วน Q/Q₀</label>
-                </div>
-                <div class="col-md-10 d-flex align-items-center">
-                    <div id="ratioCalculationText" class="calculated-value" style="min-width: 120px;">-</div>
-                    <span class="mx-2">=</span>
-                    <div id="ratioResultText" class="calculated-value" style="min-width: 60px;">-</div>
-                    <span id="ratioStatusText" class="ms-3 fw-bold">-</span>
-                </div>
-            </div>
+                if (data.cal_data && data.cal_data.length > 0) {
+                    const savedDesigns = data.design_data || [];
+                    // Transform 'mapPageTableData' structure (Groups -> Rows) into 'pipeData' structure
+                    // mapPageTableData format: [{ type: '...', rows: [ [col0, col1, ... col16], ... ] }, ...]
+                    // Row Index 2 = Pipe ID, Index 16 = Q
 
-            <hr class="my-4">
+                    const newPipeData = [];
+                    data.cal_data.forEach(group => {
+                        if (group.rows) {
+                            group.rows.forEach(row => {
+                                // Extract Input from Map Table (Index 2=ID, 16=Q)
+                                const id = row[2];
+                                const q = parseFloat(row[16]) || 0;
 
-            <div class="row">
-                <div class="col-lg-7">
-                    <div class="graph-container">
-                        <canvas id="hydraulicChart"></canvas>
-                    </div>
+                                // if (id === 'A') {
+                                //    console.log('Loaded Pipe A, Q:', q);
+                                // }
+
+                                // Try to find existing design for this pipe in saved design_data
+                                const saved = savedDesigns.find(d => d.id === id) || {};
+
+                                newPipeData.push({
+                                    id: id,
+                                    q: q, // Always take fresh Q from Map
+                                    cell: saved.cell || 1,
+                                    size: saved.size || '-',
+                                    slope: saved.slope || '-',
+                                    qp: saved.qp || '-',
+                                    vp: saved.vp || '-',
+                                    v: saved.v || '-',
+                                    status: saved.status || 'Pending'
+                                });
+                            });
+                        }
+                    });
+
+                    if (newPipeData.length > 0) {
+                        pipeData = newPipeData;
+                        renderSummaryTable(); // Fixed function name
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading project data:', error);
+            }
+        }
+
+        // Call load on start
+        document.addEventListener('DOMContentLoaded', loadProjectData);
+
+        async function validateAndProceed() {
+            // Check for any Pending or NG status
+            const invalidPipes = pipeData.filter(p => p.status === 'Pending' || p.status === 'NG');
+
+            if (invalidPipes.length > 0) {
+                const invalidIds = invalidPipes.map(p => p.id).join(', ');
+                alert(`ไม่สามารถดำเนินการต่อได้\n\nพบท่อที่มีสถานะ Pending หรือ NG ดังนี้: ${invalidIds}\n\nกรุณาออกแบบให้ผ่านเกณฑ์ (OK หรือ Warning) ก่อนดำเนินการต่อ`);
+                return;
+            }
+
+            // Save data to server before proceeding
+            if (projectId) {
+                try {
+                    await fetch(`/api/save_project_data/${projectId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ design_data: pipeData }),
+                    });
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล แต่ระบบจะดำเนินการต่อ');
+                }
+            } else {
+                // Fallback to localStorage if no project (shouldn't happen in normal flow usually)
+                localStorage.setItem('calTableData', JSON.stringify(pipeData));
+            }
+
+            // Proceed
+            window.location.href = invertCalUrl;
+        }
+    </script>
+
+    <!-- CALCULATION MODAL -->
+    <div class="modal fade text-dark" id="calculationModal" tabindex="-1" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle">ออกแบบท่อระบายน้ำ - ท่อ <span id="modalPipeId"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="col-lg-5">
-                    <div id="final-calcs" class="calculation-box mt-4 mt-lg-0 p-3 bg-light rounded">
-
-                        <div class="row align-items-center mb-3">
-                            <div class="col-sm-5">
-                                <label for="vRatioDisplay" class="form-label mb-0">อัตราส่วน V/V₀</label>
-                            </div>
-                            <div class="col-sm-7">
-                                <input type="text" id="vRatioDisplay" class="form-control form-control-lg text-center"
-                                    readonly value="-">
+                <div class="modal-body">
+                    <!-- Original Calculation Interface starts here -->
+                    <div class="row g-3 align-items-center mb-3">
+                        <div class="col-md-2"><label class="form-label">ปริมาณน้ำออกแบบ</label></div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" id="designFlow" class="form-control text-primary fw-bold" readonly>
+                                <span class="input-group-text">ลบ.ม./วินาที</span>
                             </div>
                         </div>
-
-                        <div class="row align-items-center mb-3">
-                            <div class="col-sm-5">
-                                <label for="finalVelocityValue" class="form-label mb-0">ความเร็วจริง (V)</label>
+                        <div class="col-md-2 text-md-end"><label class="form-label">จำนวนฝั่ง</label></div>
+                        <div class="col-md-2">
+                            <!-- Fixed to 1 side for now based on flow, or keep selectable if user wants -->
+                            <select id="numSides" class="form-select bg-light-blue">
+                                <option value="1">1 ฝั่ง</option>
+                                <option value="2">2 ฝั่ง</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" id="flowPerSide" class="form-control text-primary fw-bold" readonly>
+                                <span class="input-group-text">ลบ.ม./วินาที</span>
                             </div>
-                            <div class="col-sm-7">
-                                <div class="input-group input-group">
-                                    <input type="text" id="finalVelocityValue"
-                                        class="form-control form-control-lg text-primary fw-bold text-center" readonly
-                                        value="-">
-                                    <span class="input-group-text">ม./วินาที</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center mb-4">
+                        <div class="col-md-2"><label class="form-label">เลือกขนาดท่อ</label></div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text">ø</span>
+                                <input type="text" id="pipeSize" class="form-control" value="0.60">
+                                <span class="input-group-text">ม.</span>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="btn-group" role="group">
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary pipe-size-btn">0.60</button>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary pipe-size-btn">0.80</button>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary pipe-size-btn">1.00</button>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary pipe-size-btn">1.20</button>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary pipe-size-btn">1.50</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-2"><label class="form-label">ความชัน</label></div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">1 :</span>
+                                <select id="slopeDenominator" class="form-select bg-light-blue">
+                                    <option value="750">750</option>
+                                    <option value="1000" selected>1000</option>
+                                    <option value="1200">1200</option>
+                                    <option value="1500">1500</option>
+                                    <option value="2000">2000</option>
+                                </select>
+                                <span class="input-group-text">/</span>
+                                <input type="text" id="pipeSlope" class="form-control" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Results Section -->
+                    <div class="row g-3 align-items-center mb-4">
+                        <div class="col-md-2">
+                            <label class="form-label">ความจุ, Q₀</label>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" id="pipeCapacity" class="form-control text-primary fw-bold" readonly>
+                                <span class="input-group-text">ลบ.ม./วินาที</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-md-start">
+                            <label class="form-label">ความเร็ว, V₀</label>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" id="pipeVelocity" class="form-control text-primary fw-bold" readonly>
+                                <span class="input-group-text">ม./วินาที</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-2">
+                            <label class="form-label">อัตราส่วน Q/Q₀</label>
+                        </div>
+                        <div class="col-md-10 d-flex align-items-center">
+                            <div id="ratioCalculationText" class="calculated-value" style="min-width: 120px;">-</div>
+                            <span class="mx-2">=</span>
+                            <div id="ratioResultText" class="calculated-value" style="min-width: 60px;">-</div>
+                            <span id="ratioStatusText" class="ms-3 fw-bold">-</span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-lg-7">
+                            <div class="graph-container" style="height: 300px;">
+                                <canvas id="hydraulicChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div id="final-calcs" class="calculation-box mt-4 mt-lg-0 p-3 bg-light rounded border">
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-sm-5"><label class="form-label mb-0">อัตราส่วน V/V₀</label></div>
+                                    <div class="col-sm-7"><input type="text" id="vRatioDisplay"
+                                            class="form-control text-center" readonly value="-"></div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 pt-3 border-top">
-                            <div class="row align-items-center">
-                                <div class="col-sm-7 text-center">
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-sm-5"><label class="form-label mb-0">ความเร็วจริง (V)</label></div>
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            <input type="text" id="finalVelocityValue"
+                                                class="form-control fw-bold text-center text-primary" readonly
+                                                value="-">
+                                            <span class="input-group-text">ม./วินาที</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-center">
                                     <span id="vCheckValue" class="fw-bold fs-5">-</span>
-                                    <span class="text-muted">ม./วินาที</span>
+                                    <span id="vCheckStatus" class="badge fs-6 ms-2">-</span>
+                                    <p class="text-muted small mt-1">(เกณฑ์ขั้นต่ำ > 0.600 m/s)</p>
                                 </div>
-                                <div class="col-sm-5 text-center">
-                                    <span id="vCheckStatus" class="badge fs-6">-</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-muted text-center small mt-1 mb-0">(เกณฑ์ขั้นต่ำ > 0.600 m/s
-                                    เพื่อป้องกันการตกตะกอน)</p>
                             </div>
                         </div>
-
                     </div>
+                </div> <!-- End Modal Body -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCalculation()">บันทึกการออกแบบ</button>
                 </div>
             </div>
         </div>
@@ -234,293 +334,322 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        // === Global Data ===
+        // Load data from localStorage if available, otherwise use mock data
+        let savedData = localStorage.getItem('calTableData');
+        let pipeData = savedData ? JSON.parse(savedData) : [
+            { id: 'A', q: 0.0259, cell: 1, size: '-', slope: '-', qp: '-', vp: '-', v: '-', status: 'Pending' },
+            { id: 'B', q: 0.0284, cell: 1, size: '-', slope: '-', qp: '-', vp: '-', v: '-', status: 'Pending' },
+            { id: 'C', q: 0.0429, cell: 1, size: '-', slope: '-', qp: '-', vp: '-', v: '-', status: 'Pending' },
+            { id: 'D', q: 0.0564, cell: 1, size: '-', slope: '-', qp: '-', vp: '-', v: '-', status: 'Pending' },
+            { id: 'E', q: 0.0721, cell: 1, size: '-', slope: '-', qp: '-', vp: '-', v: '-', status: 'Pending' }
+        ];
+
+        let currentResult = {}; // Holds temporary calculation result
+        let activeRowIndex = -1;
+
+        // Chart Instance
+        let hydraulicChart = null;
+        let chartData = { area: [], radius: [], discharge: [], velocity: [] };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Render table immediately
+            renderSummaryTable();
+
+            initializeChart();
+            adjustBodyPadding();
+            window.addEventListener('resize', adjustBodyPadding);
+
+            // Bind Event Listeners for Modal Inputs
+            const designFlowInput = document.getElementById('designFlow');
+            const numSidesSelect = document.getElementById('numSides');
+            const slopeDenominatorSelect = document.getElementById('slopeDenominator');
+            const pipeSizeInput = document.getElementById('pipeSize');
+            const pipeSlopeInput = document.getElementById('pipeSlope');
+            const pipeSizeButtons = document.querySelectorAll('.pipe-size-btn');
+
+            // Recalculate when inputs change
+            numSidesSelect.addEventListener('change', runCalculation);
+            slopeDenominatorSelect.addEventListener('change', updateDecimalSlope); // This triggers runCalculation via slope input
+            pipeSizeInput.addEventListener('input', runCalculation);
+            pipeSlopeInput.addEventListener('input', runCalculation);
+
+            pipeSizeButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    pipeSizeInput.value = this.textContent;
+                    runCalculation();
+                });
+            });
+        });
+
         function adjustBodyPadding() {
             const navbar = document.getElementById('mainNavbar');
             if (navbar) {
-                const navbarHeight = navbar.offsetHeight;
-                document.body.style.paddingTop = navbarHeight + 'px';
+                document.body.style.paddingTop = navbar.offsetHeight + 'px';
             }
         }
 
-        // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
-        document.addEventListener('DOMContentLoaded', adjustBodyPadding);
+        // === Table Rendering ===
+        function renderSummaryTable() {
+            const tbody = document.getElementById('summaryTableBody');
+            tbody.innerHTML = '';
+            pipeData.forEach((pipe, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${pipe.id}</td>
+                    <td>${pipe.q.toFixed(4)}</td>
+                    <td>${pipe.cell}</td>
+                    <td>${pipe.size !== '-' ? 'ø ' + pipe.size : '-'}</td>
+                    <td>${pipe.slope}</td>
+                    <td>${pipe.qp}</td>
+                    <td>${pipe.vp}</td>
+                    <td>${pipe.v}</td>
+                    <td><span class="badge ${getStatusBadgeClass(pipe.status)}">${pipe.status}</span></td>
+                    <td><button class="btn btn-sm btn-outline-primary" onclick="openCalculationModal(${index})"><i class="bi bi-pencil"></i> ออกแบบ</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-        // เรียกใช้ฟังก์ชันอีกครั้งเมื่อมีการปรับขนาดหน้าจอ (เช่น หมุนมือถือ)
-        window.addEventListener('resize', adjustBodyPadding);
-    </script>
+        function getStatusBadgeClass(status) {
+            if (status === 'OK') return 'bg-success';
+            if (status === 'Warning') return 'bg-warning text-dark';
+            if (status === 'NG') return 'bg-danger';
+            return 'bg-secondary';
+        }
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // === Element References ===
-            const designFlowInput = document.getElementById('designFlow');
-            const numSidesSelect = document.getElementById('numSides');
-            const flowPerSideInput = document.getElementById('flowPerSide');
-            const pipeSizeInput = document.getElementById('pipeSize');
-            const pipeSizeButtons = document.querySelectorAll('.pipe-size-btn');
-            const slopeDenominatorSelect = document.getElementById('slopeDenominator');
-            const pipeSlopeInput = document.getElementById('pipeSlope');
-            const pipeCapacityInput = document.getElementById('pipeCapacity');
-            const pipeVelocityInput = document.getElementById('pipeVelocity');
-            const ratioCalculationText = document.getElementById('ratioCalculationText');
-            const ratioResultText = document.getElementById('ratioResultText');
-            const ratioStatusText = document.getElementById('ratioStatusText');
-            const vRatioDisplay = document.getElementById('vRatioDisplay');
-            const vCalculationText = document.getElementById('vCalculationText');
-            const vResultText = document.getElementById('vResultText');
-            const vCheckValue = document.getElementById('vCheckValue');
-            const vCheckStatus = document.getElementById('vCheckStatus');
+        // === Modal & Calculation Logic ===
+        function openCalculationModal(index) {
+            activeRowIndex = index;
+            const pipe = pipeData[index];
 
-            // === Global Data for Chart ===
-            let chartData = { area: [], radius: [], discharge: [], velocity: [] };
+            // Set Modal Title
+            document.getElementById('modalPipeId').textContent = pipe.id;
 
-            // === Chart.js Instance ===
+            // Set Flow Data
+            document.getElementById('designFlow').value = pipe.q;
+            document.getElementById('numSides').value = pipe.cell; // Assuming cell = numSides for simplicity
+
+            // Set Default or Existing Pipe Config
+            document.getElementById('pipeSize').value = pipe.size !== '-' ? pipe.size : '0.60';
+
+            // Set Slope (Convert decimal back to denominator if possible, or default to 1000)
+            let currentSlope = pipe.slope !== '-' ? parseFloat(pipe.slope) : 0.0010;
+            let denom = Math.round(1 / currentSlope);
+            let denomSelect = document.getElementById('slopeDenominator');
+            // Try to match exact option, otherwise default
+            if ([750, 1000, 1200, 1500, 2000].includes(denom)) {
+                denomSelect.value = denom;
+            } else {
+                denomSelect.value = 1000; // Default
+            }
+
+            // Trigger initial calculation in modal
+            updateDecimalSlope(); // This will eventually call runCalculation
+
+            // Show Modal
+            new bootstrap.Modal(document.getElementById('calculationModal')).show();
+        }
+
+        function updateDecimalSlope() {
+            const denominator = parseInt(document.getElementById('slopeDenominator').value, 10);
+            const slopeInput = document.getElementById('pipeSlope');
+            slopeInput.value = (denominator === 0 ? 0 : 1 / denominator).toFixed(4);
+            runCalculation();
+        }
+
+        function runCalculation() {
+            // 1. Get Inputs
+            const Q_design = parseFloat(document.getElementById('designFlow').value) || 0;
+            const numSides = parseInt(document.getElementById('numSides').value) || 1;
+            const D = parseFloat(document.getElementById('pipeSize').value) || 0;
+            const S = parseFloat(document.getElementById('pipeSlope').value) || 0;
+            const manningN = 0.016;
+
+            // Update Flow per Side
+            const Q_side = Q_design / numSides;
+            document.getElementById('flowPerSide').value = Q_side.toFixed(3);
+
+            // 2. Full Flow Calc
+            let Q_full = 0, V_full = 0;
+            if (D > 0 && S > 0) {
+                const area = (Math.PI * Math.pow(D, 2)) / 4;
+                const hydraulicRadius = D / 4;
+                Q_full = (1 / manningN) * area * Math.pow(hydraulicRadius, 2 / 3) * Math.sqrt(S);
+                V_full = Q_full / area;
+            }
+            document.getElementById('pipeCapacity').value = Q_full.toFixed(3);
+            document.getElementById('pipeVelocity').value = V_full.toFixed(3);
+
+            // 3. Ratio Calc
+            const ratioDetails = document.getElementById('ratioCalculationText');
+            const ratioResult = document.getElementById('ratioResultText');
+            const ratioStatus = document.getElementById('ratioStatusText');
+
+            ratioDetails.textContent = `${Q_side.toFixed(3)} / ${Q_full.toFixed(3)}`;
+
+            let status = 'NG';
+            let q_ratio = 0;
+
+            if (Q_full > 0) {
+                q_ratio = Q_side / Q_full;
+                ratioResult.textContent = q_ratio.toFixed(3);
+                if (q_ratio < 1.0) {
+                    status = 'OK';
+                    ratioStatus.textContent = "OK";
+                    ratioStatus.className = "ms-3 fw-bold text-success";
+                } else {
+                    ratioStatus.textContent = "NG";
+                    ratioStatus.className = "ms-3 fw-bold text-danger";
+                }
+            } else {
+                ratioResult.textContent = "N/A";
+                ratioStatus.textContent = "NG";
+                ratioStatus.className = "ms-3 fw-bold text-danger";
+            }
+
+            // 4. Hydraulic Chart Lookup (Simplified Logic)
+            // ... Using the chartData lookups from before ...
+            let v_v_ratio = 0;
+            if (chartData.discharge.length > 0 && q_ratio > 0) {
+                // Find closest Q ratio in chart data
+                let closest = chartData.discharge.reduce((prev, curr) =>
+                    Math.abs(curr.x - q_ratio) < Math.abs(prev.x - q_ratio) ? curr : prev
+                );
+                // Find corresponding V ratio
+                // Note: chartData indexes match. y is d/D.
+                // We find point with same y in velocity dataset.
+                let idx = chartData.discharge.indexOf(closest);
+                if (idx !== -1) {
+                    v_v_ratio = chartData.velocity[idx].x;
+                }
+            }
+
+            // 5. Final Results
+            const V_actual = v_v_ratio * V_full;
+            document.getElementById('vRatioDisplay').value = v_v_ratio.toFixed(3);
+            document.getElementById('finalVelocityValue').value = V_actual.toFixed(3);
+
+            const vStatusDisplay = document.getElementById('vCheckStatus');
+            const vValueDisplay = document.getElementById('vCheckValue');
+
+            let vStatus = 'NG';
+            if (V_actual >= 0.6) {
+                vStatus = 'OK';
+                vStatusDisplay.className = 'badge fs-6 bg-success';
+            } else {
+                vStatusDisplay.className = 'badge fs-6 bg-danger';
+                // If status was previously OK but velocity is low, it might be a Warning
+                if (status === 'OK') status = 'Warning';
+            }
+            vStatusDisplay.textContent = vStatus;
+            vValueDisplay.textContent = (V_actual >= 0.6 ? '>' : '<') + ' 0.600';
+
+            // Update Graph Annotation
+            updateGraphAnnotation(q_ratio, v_v_ratio);
+
+            // Store current result for saving
+            currentResult = {
+                size: D.toFixed(2),
+                slope: S.toFixed(4),
+                qp: Q_full.toFixed(3),
+                vp: V_full.toFixed(3),
+                v: V_actual.toFixed(3),
+                status: status
+            };
+        }
+
+        function saveCalculation() {
+            if (activeRowIndex !== -1) {
+                const pipe = pipeData[activeRowIndex];
+                pipe.size = currentResult.size;
+                pipe.slope = currentResult.slope;
+                pipe.qp = currentResult.qp;
+                pipe.vp = currentResult.vp;
+                pipe.v = currentResult.v;
+                pipe.status = currentResult.status;
+                pipe.cell = document.getElementById('numSides').value; // Update cell if changed
+
+                // Save to localStorage
+                localStorage.setItem('calTableData', JSON.stringify(pipeData));
+
+                renderSummaryTable();
+                bootstrap.Modal.getInstance(document.getElementById('calculationModal')).hide();
+            }
+        }
+
+        // --- Chart Initialization (Copied logic) ---
+        function initializeChart() {
             const ctx = document.getElementById('hydraulicChart').getContext('2d');
-            const hydraulicChart = new Chart(ctx, {
+            hydraulicChart = new Chart(ctx, {
                 type: 'scatter',
                 data: {
                     datasets: [
-                        {
-                            label: 'Area (A)',
-                            data: [],
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            showLine: true,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Hydraulic Radius (R)',
-                            data: [],
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            showLine: true,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Discharge (Q)',
-                            data: [],
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 3,
-                            pointRadius: 0,
-                            showLine: true,
-                            tension: 0.1,
-                            borderDash: [5, 5]
-                        },
-                        {
-                            label: 'Velocity (V)',
-                            data: [],
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 3,
-                            pointRadius: 0,
-                            showLine: true,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Calculation Path',
-                            data: [],
-                            borderColor: 'rgba(255, 0, 0, 1)',
-                            borderWidth: 2.5,
-                            pointRadius: 3,
-                            pointBackgroundColor: 'rgba(255, 0, 0, 1)',
-                            showLine: true,
-                            stepped: 'before'
-                        }
+                        { label: 'Area', data: [], borderColor: 'blue', borderWidth: 1, pointRadius: 0, showLine: true },
+                        { label: 'Radius', data: [], borderColor: 'pink', borderWidth: 1, pointRadius: 0, showLine: true },
+                        { label: 'Discharge', data: [], borderColor: 'purple', borderWidth: 2, pointRadius: 0, showLine: true, borderDash: [5, 5] },
+                        { label: 'Velocity', data: [], borderColor: 'teal', borderWidth: 2, pointRadius: 0, showLine: true },
+                        { label: 'Calc Path', data: [], borderColor: 'red', borderWidth: 2, pointRadius: 3, showLine: true }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: {
-                            title: { display: true, text: 'Hydraulic elements (Q/Q₀, V/V₀, etc.)' },
-                            min: 0,
-                            max: 1.4
-                        },
-                        y: {
-                            title: { display: true, text: 'Ratio of depth to diameter (d/D)' },
-                            min: 0,
-                            max: 1.0
-                        }
-                    },
-                    plugins: {
-                        legend: { position: 'top' }
+                        x: { min: 0, max: 1.4, title: { display: true, text: 'Hydraulic Elements' } },
+                        y: { min: 0, max: 1.0, title: { display: true, text: 'Depth Ratio (d/D)' } }
                     }
                 }
             });
+            generateChartData();
+        }
 
-            // === Calculation Functions ===
-
-            /**
-             * สร้างข้อมูลสำหรับเส้นกราฟไฮดรอลิกส์ทั้งหมด
-             */
-            function generateChartData() {
-                chartData = { area: [], radius: [], discharge: [], velocity: [] };
-                function getNRatio(r) { if (r <= 0) return 1; if (r <= 0.03) return 1 + (r / 0.3); if (r <= 0.1) return 1.1 + (r - 0.03) * (12 / 7); if (r <= 0.2) return 1.22 + (r - 0.1) * 0.6; if (r <= 0.3) return 1.29; if (r <= 0.5) return 1.29 - (r - 0.3) * 0.2; return 1.25 - (r - 0.5) * 0.5; }
-                for (let i = 0; i <= 100; i++) {
-                    const y_d = i / 100;
-                    if (y_d === 0) {
-                        chartData.area.push({ x: 0, y: 0 });
-                        chartData.radius.push({ x: 0, y: 0 });
-                        chartData.discharge.push({ x: 0, y: 0 });
-                        chartData.velocity.push({ x: 0, y: 0 });
-                        continue;
-                    }
-                    const theta = 2 * Math.acos(1 - 2 * y_d);
-                    const a_afull = (theta - Math.sin(theta)) / (2 * Math.PI);
-                    const r_rfull = (1 - Math.sin(theta) / theta);
-                    chartData.area.push({ x: a_afull, y: y_d });
-                    chartData.radius.push({ x: r_rfull, y: y_d });
-                    const n_nfull = getNRatio(y_d);
-                    const v_vfull = (1 / n_nfull) * Math.pow(r_rfull, 2 / 3);
-                    const q_qfull = a_afull * v_vfull;
-                    chartData.discharge.push({ x: q_qfull, y: y_d });
-                    chartData.velocity.push({ x: v_vfull, y: y_d });
+        function generateChartData() {
+            // ... (Same gen logic as original) ...
+            function getNRatio(r) { if (r <= 0) return 1; if (r <= 0.03) return 1 + (r / 0.3); if (r <= 0.1) return 1.1 + (r - 0.03) * (12 / 7); if (r <= 0.2) return 1.22 + (r - 0.1) * 0.6; if (r <= 0.3) return 1.29; if (r <= 0.5) return 1.29 - (r - 0.3) * 0.2; return 1.25 - (r - 0.5) * 0.5; }
+            for (let i = 0; i <= 100; i++) {
+                const y_d = i / 100;
+                if (y_d === 0) {
+                    ['area', 'radius', 'discharge', 'velocity'].forEach(k => chartData[k].push({ x: 0, y: 0 }));
+                    continue;
                 }
-                // อัปเดตข้อมูลลงใน instance ของกราฟ
-                hydraulicChart.data.datasets[0].data = chartData.area;
-                hydraulicChart.data.datasets[1].data = chartData.radius;
-                hydraulicChart.data.datasets[2].data = chartData.discharge;
-                hydraulicChart.data.datasets[3].data = chartData.velocity;
+                const theta = 2 * Math.acos(1 - 2 * y_d);
+                const a_afull = (theta - Math.sin(theta)) / (2 * Math.PI);
+                const r_rfull = (1 - Math.sin(theta) / theta);
+                chartData.area.push({ x: a_afull, y: y_d });
+                chartData.radius.push({ x: r_rfull, y: y_d });
+                const n_nfull = getNRatio(y_d);
+                const v_vfull = (1 / n_nfull) * Math.pow(r_rfull, 2 / 3);
+                const q_qfull = a_afull * v_vfull;
+                chartData.discharge.push({ x: q_qfull, y: y_d });
+                chartData.velocity.push({ x: v_vfull, y: y_d });
             }
+            hydraulicChart.data.datasets[0].data = chartData.area;
+            hydraulicChart.data.datasets[1].data = chartData.radius;
+            hydraulicChart.data.datasets[2].data = chartData.discharge;
+            hydraulicChart.data.datasets[3].data = chartData.velocity;
+            hydraulicChart.update();
+        }
 
-            /**
-             * คำนวณปริมาณน้ำต่อฝั่ง
-             */
-            function updateFlowPerSide() {
-                const designFlow = parseFloat(designFlowInput.value) || 0;
-                const numSides = parseInt(numSidesSelect.value, 10);
-                flowPerSideInput.value = (designFlow / numSides).toFixed(3);
-                updateRatio(); // เรียกฟังก์ชันถัดไปในเชน
-            }
+        function updateGraphAnnotation(q_ratio, v_v_ratio) {
+            // Find y (d/D) for this q_ratio
+            let closest = chartData.discharge.reduce((prev, curr) =>
+                Math.abs(curr.x - q_ratio) < Math.abs(prev.x - q_ratio) ? curr : prev
+            );
+            let y = closest.y;
 
-            /**
-             * คำนวณความจุ (Q₀) และความเร็ว (V₀) ของท่อเมื่อน้ำเต็มท่อ
-             */
-            function calculateFullFlow() {
-                const manningN = 0.016; // n สำหรับท่อคอนกรีต
-                const D = parseFloat(pipeSizeInput.value) || 0;
-                const S = parseFloat(pipeSlopeInput.value) || 0;
+            const path = [
+                { x: q_ratio, y: 0 },
+                { x: q_ratio, y: y },
+                { x: v_v_ratio, y: y },
+                { x: v_v_ratio, y: 0 }
+            ];
+            hydraulicChart.data.datasets[4].data = path;
+            hydraulicChart.update('none');
+        }
 
-                if (D === 0 || S === 0) {
-                    pipeCapacityInput.value = (0).toFixed(3);
-                    pipeVelocityInput.value = (0).toFixed(3);
-                } else {
-                    const area = (Math.PI * Math.pow(D, 2)) / 4;
-                    const hydraulicRadius = D / 4;
-                    const capacity = (1 / manningN) * area * Math.pow(hydraulicRadius, 2 / 3) * Math.sqrt(S);
-                    const velocity = capacity / area;
-                    pipeCapacityInput.value = capacity.toFixed(3);
-                    pipeVelocityInput.value = velocity.toFixed(3);
-                }
-                updateRatio(); // เรียกฟังก์ชันถัดไปในเชน
-            }
-
-            /**
-             * อัปเดตค่า slope (ทศนิยม) จาก dropdown
-             */
-            function updateDecimalSlope() {
-                const denominator = parseInt(slopeDenominatorSelect.value, 10);
-                pipeSlopeInput.value = (denominator === 0 ? 0 : 1 / denominator).toFixed(4);
-                // ส่ง Event 'input' เพื่อให้ calculateFullFlow ทำงานต่อ
-                pipeSlopeInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-
-            /**
-             * คำนวณอัตราส่วน Q/Q₀ และแสดงผล OK/NG
-             */
-            function updateRatio() {
-                const q = parseFloat(flowPerSideInput.value) || 0;
-                const q0 = parseFloat(pipeCapacityInput.value) || 0;
-
-                ratioCalculationText.textContent = `${q.toFixed(3)} / ${q0.toFixed(3)}`;
-
-                if (q0 === 0) {
-                    ratioResultText.textContent = "N/A";
-                    ratioStatusText.textContent = "NG กรุณาเลือกขนาดท่อและความชันใหม่อีกครั้ง";
-                    ratioStatusText.className = "ms-3 fw-bold text-danger";
-                    updateGraphAndFinalCalcs(0); // ส่งค่า 0 ไปคำนวณต่อ
-                    return;
-                }
-
-                const ratio = q / q0;
-                ratioResultText.textContent = ratio.toFixed(3);
-
-                if (ratio < 1.0) {
-                    ratioStatusText.textContent = "OK";
-                    ratioStatusText.className = "ms-3 fw-bold text-success";
-                } else {
-                    ratioStatusText.textContent = "NG ---> กรุณาเลือกขนาดท่อและความชันใหม่อีกครั้ง";
-                    ratioStatusText.className = "ms-3 fw-bold text-danger";
-                }
-                // เรียกฟังก์ชันสุดท้ายในเชน
-                updateGraphAndFinalCalcs(ratio);
-            }
-
-            /**
-             * คำนวณค่าในกล่องสุดท้ายและอัปเดตเส้นบนกราฟ
-             * @param {number} q_ratio - ค่า Q/Q₀ ที่คำนวณได้
-             */
-            function updateGraphAndFinalCalcs(q_ratio) {
-                const minVelocity = 0.600;
-                const v0 = parseFloat(pipeVelocityInput.value) || 0;
-
-                // --- ส่วนนี้เหมือนเดิม ---
-                let closestQPoint = chartData.discharge.reduce((prev, curr) => Math.abs(curr.x - q_ratio) < Math.abs(prev.x - q_ratio) ? curr : prev);
-                let d_d_ratio = closestQPoint.y;
-                let correspondingVPoint = chartData.velocity.find(p => p.y === d_d_ratio);
-                let v_v_ratio = correspondingVPoint ? correspondingVPoint.x : 0;
-
-                const annotationLine = [{ x: q_ratio, y: 0 }, { x: q_ratio, y: d_d_ratio }, { x: v_v_ratio, y: d_d_ratio }, { x: v_v_ratio, y: 0 }];
-                hydraulicChart.data.datasets[4].data = annotationLine;
-                hydraulicChart.update('none');
-
-                // =============================================
-                // ===== ส่วนอัปเดตการแสดงผลที่แก้ไขแล้ว =====
-                // =============================================
-                const final_v = v_v_ratio * v0;
-
-                // อัปเดตค่าใน Input ของ V/V₀ (ใช้ .value แทน .textContent)
-                vRatioDisplay.value = v_v_ratio.toFixed(3);
-
-                // อ้างอิง Input ใหม่สำหรับความเร็วจริง
-                const finalVelocityInput = document.getElementById('finalVelocityValue');
-                finalVelocityInput.value = final_v.toFixed(3);
-
-                // ตรวจสอบเงื่อนไขความเร็วขั้นต่ำ
-                const symbol = final_v >= minVelocity ? ">" : "<";
-                vCheckValue.innerHTML = `${symbol} ${minVelocity.toFixed(3)}`;
-                if (final_v >= minVelocity) {
-                    vCheckStatus.textContent = "OK";
-                    // เปลี่ยน Class เพื่อแสดงเป็น Badge สีเขียว
-                    vCheckStatus.className = "badge fs-6 bg-success";
-                } else {
-                    vCheckStatus.textContent = "NG";
-                    // เปลี่ยน Class เพื่อแสดงเป็น Badge สีแดง
-                    vCheckStatus.className = "badge fs-6 bg-danger";
-                }
-            }
-
-            // === Event Listeners ===
-            designFlowInput.addEventListener('input', updateFlowPerSide);
-            numSidesSelect.addEventListener('change', updateFlowPerSide);
-            slopeDenominatorSelect.addEventListener('change', updateDecimalSlope);
-            pipeSizeInput.addEventListener('input', calculateFullFlow);
-            pipeSlopeInput.addEventListener('input', calculateFullFlow);
-
-            pipeSizeButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    pipeSizeInput.value = this.textContent;
-                    pipeSizeInput.dispatchEvent(new Event('input', { bubbles: true }));
-                });
-            });
-
-            // === Initial Calls on Page Load ===
-            generateChartData(); // สร้างข้อมูลสำหรับกราฟก่อน
-            updateFlowPerSide();   // เริ่มเชนการคำนวณจาก Flow
-            updateDecimalSlope();  // เริ่มเชนการคำนวณจาก Slope
-        });</script>
-
+    </script>
 </body>
+
 
 </html>

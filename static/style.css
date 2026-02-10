@@ -60,11 +60,11 @@ h2 {
 }
 
 /* Container ทั่วไป (คล้าย Bootstrap) */
-.container {
+/* .container {
     max-width: 1140px;
     margin-top: 2rem;
     margin-bottom: 2rem;
-}
+} */
 
 /* --- 3. ส่วนแผนที่ (Map Section) --- */
 #map-container {
@@ -343,4 +343,55 @@ input[type=number] {
     .form-container {
         padding: 40px;
     }
+}
+
+/* --- 8. สไตล์เพิ่มเติมสำหรับตารางคำนวณ (Custom Calculation Table Styles) --- */
+
+.input-group-header {
+    background-color: #e9ecef; /* สีเทาอ่อน */
+    color: #495057;
+    font-weight: bold;
+    border-radius: 6px !important;
+    border: 1px solid #dee2e6;
+}
+
+.output-header {
+    background-color: #0d6efd; /* สีน้ำเงินหลัก */
+    color: white;
+}
+
+.output-cell {
+    background-color: #0d6efd; /* สีน้ำเงินหลัก */
+    font-weight: bold;
+}
+
+.output-cell input.form-control {
+    background-color: transparent;
+    border: none;
+    color: white; /* ทำให้ตัวหนังสือในช่อง output เป็นสีขาว */
+    font-weight: bold;
+}
+
+/* ปรับปรุงสไตล์ของ Bootstrap เล็กน้อยให้เข้ากัน */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 1200px; /* กำหนดความกว้างขั้นต่ำเพื่อให้ตารางไม่เบียดกันเกินไปในจอเล็ก */
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.table .form-control {
+    border: none;
+    background-color: transparent;
+    padding: 0.375rem;
+    text-align: center;
+}
+
+.table .form-control:read-only {
+    background-color: #f8f9fa;
 }
